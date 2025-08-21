@@ -17,6 +17,5 @@
         android:layout_height="match_parent"
         android:clipToPadding="false"
         android:paddingBottom="90dp"
-        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
-        tools:listitem="@layout/about_teamview" />
+        app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager" />
 </RelativeLayout>

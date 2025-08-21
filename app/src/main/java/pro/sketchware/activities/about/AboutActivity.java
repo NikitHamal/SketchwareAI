@@ -20,7 +20,6 @@ import com.google.gson.Gson;
 import mod.hey.studios.util.Helper;
 import pro.sketchware.R;
 import pro.sketchware.activities.about.fragments.BetaChangesFragment;
-import pro.sketchware.activities.about.fragments.TeamFragment;
 import pro.sketchware.activities.about.models.AboutAppViewModel;
 import pro.sketchware.activities.about.models.AboutResponseModel;
 import pro.sketchware.databinding.ActivityAboutAppBinding;
@@ -52,40 +51,11 @@ public class AboutActivity extends BaseAppCompatActivity {
 
     private void initViews() {
         binding.toolbar.setNavigationOnClickListener(Helper.getBackPressedClickListener(this));
-        binding.discordButton.setOnClickListener(v -> {
-            String discordLink = aboutAppData.getDiscordInviteLink().getValue();
-            if (discordLink != null) {
-                startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(discordLink)));
-            }
-        });
+        binding.discordButton.setVisibility(View.GONE);
+        binding.tabLayout.setVisibility(View.GONE);
+
         AboutAdapter adapter = new AboutAdapter(this);
-        binding.viewPager.setOffscreenPageLimit(3);
         binding.viewPager.setAdapter(adapter);
-
-        String[] tabTitles = new String[]{
-                Helper.getResString(R.string.about_team_title),
-                Helper.getResString(R.string.about_beta_changes_title)
-        };
-
-        new TabLayoutMediator(binding.tabLayout, binding.viewPager, (tab, position) -> tab.setText(tabTitles[position])).attach();
-
-        binding.viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
-            @Override
-            public void onPageSelected(int position) {
-                if (position == 0) {
-                    binding.discordButton.extend();
-                } else {
-                    binding.discordButton.shrink();
-                }
-            }
-        });
-
-        String toSelect = getIntent().getStringExtra("select");
-        if (toSelect != null) {
-            if ("betaChanges".equals(toSelect)) {
-                binding.viewPager.setCurrentItem(1);
-            }
-        }
     }
 
     private void initData() {
@@ -99,8 +69,6 @@ public class AboutActivity extends BaseAppCompatActivity {
 
             Gson gson = new Gson();
             AboutResponseModel aboutResponseModel = gson.fromJson(response, AboutResponseModel.class);
-            aboutAppData.setDiscordInviteLink(aboutResponseModel.getDiscordInviteLink());
-            aboutAppData.setTeamMembers(aboutResponseModel.getTeam());
         });
     }
 
@@ -114,15 +82,12 @@ public class AboutActivity extends BaseAppCompatActivity {
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            return switch (position) {
-                case 1 -> new BetaChangesFragment();
-                default -> new TeamFragment();
-            };
+            return new BetaChangesFragment();
         }
 
         @Override
         public int getItemCount() {
-            return 2;
+            return 1;
         }
     }
 }

@@ -82,6 +82,31 @@ public class ChatActivity extends BaseAppCompatActivity {
         // Configure edge-to-edge if available
         try {
             enableEdgeToEdgeNoContrast();
+            
+            // Handle window insets for edge-to-edge design
+            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
+                androidx.core.graphics.Insets systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars());
+                androidx.core.graphics.Insets ime = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.ime());
+                
+                // Apply top inset to AppBarLayout
+                binding.appBarLayout.setPadding(
+                    binding.appBarLayout.getPaddingLeft(),
+                    systemBars.top,
+                    binding.appBarLayout.getPaddingRight(),
+                    binding.appBarLayout.getPaddingBottom()
+                );
+                
+                // Apply bottom inset to input section
+                int bottomInset = Math.max(systemBars.bottom, ime.bottom);
+                binding.layoutInputSection.setPadding(
+                    binding.layoutInputSection.getPaddingLeft(),
+                    binding.layoutInputSection.getPaddingTop(),
+                    binding.layoutInputSection.getPaddingRight(),
+                    12 + bottomInset // 12dp base padding + system inset
+                );
+                
+                return insets;
+            });
         } catch (Exception e) {
             // Fallback for older versions
         }

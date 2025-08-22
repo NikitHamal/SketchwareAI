@@ -49,7 +49,7 @@ public class ChatActivity extends BaseAppCompatActivity {
     private String selectedModel = "Gemini 2.5 Flash";
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         binding = ActivityChatBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());

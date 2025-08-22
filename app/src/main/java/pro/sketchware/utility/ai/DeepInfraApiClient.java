@@ -222,15 +222,26 @@ public class DeepInfraApiClient implements ApiClient {
                             for (JsonElement e : arr) {
                                 if (!e.isJsonObject()) continue;
                                 JsonObject m = e.getAsJsonObject();
+                                
+                                // Filter by type - only text generation models
                                 String type = m.has("type") ? m.get("type").getAsString() : "";
+                                if (!"text-generation".equalsIgnoreCase(type)) continue;
+                                
+                                // Skip deprecated models
+                                if (m.has("deprecated") && !m.get("deprecated").isJsonNull()) continue;
+                                
+                                // Skip private models (private: 1)
+                                if (m.has("private") && m.get("private").getAsInt() == 1) continue;
+                                
                                 String id = m.has("model_name") ? m.get("model_name").getAsString() : null;
                                 if (id == null || id.isEmpty()) continue;
-                                boolean chatCapable = "text-generation".equalsIgnoreCase(type);
-                                boolean vision = m.has("reported_type") && "text-to-image".equalsIgnoreCase(m.get("reported_type").getAsString());
-                                ModelCapabilities caps = new ModelCapabilities(false, false, vision, true, false, false, false, 131072, 8192);
-                                if (chatCapable) {
-                                    out.add(new AIModel(id, toDisplayName(id), AIProvider.DEEPINFRA, caps));
-                                }
+                                
+                                String description = m.has("description") ? m.get("description").getAsString() : "";
+                                
+                                // Detect model capabilities based on description and model name
+                                ModelCapabilities caps = detectModelCapabilities(id, description);
+                                
+                                out.add(new AIModel(id, toDisplayName(id), AIProvider.DEEPINFRA, caps));
                             }
                         }
                     } catch (Exception parseErr) {
@@ -242,12 +253,81 @@ public class DeepInfraApiClient implements ApiClient {
             Log.w(TAG, "DeepInfra models fetch failed", ex);
         }
         if (out.isEmpty()) {
-            out.add(new AIModel("deepseek-v3", "DeepInfra DeepSeek V3", AIProvider.DEEPINFRA,
-                    new ModelCapabilities(true, false, false, true, false, false, false, 131072, 8192)));
+            // Fallback model if API fails
+            ModelCapabilities fallbackCaps = detectModelCapabilities("deepseek-v3", "DeepSeek V3 is a powerful reasoning model with excellent coding and chat capabilities");
+            out.add(new AIModel("deepseek-v3", "DeepInfra DeepSeek V3", AIProvider.DEEPINFRA, fallbackCaps));
         }
         return out;
     }
 
+    private ModelCapabilities detectModelCapabilities(String modelId, String description) {
+        String lowerModelId = modelId.toLowerCase();
+        String lowerDescription = description.toLowerCase();
+        
+        // Detect thinking capability
+        boolean hasThinking = lowerModelId.contains("thinking") || 
+                             lowerModelId.contains("reasoning") ||
+                             lowerModelId.contains("-r1") ||
+                             lowerDescription.contains("thinking") ||
+                             lowerDescription.contains("reasoning") ||
+                             lowerDescription.contains("step-by-step") ||
+                             lowerDescription.contains("chain-of-thought");
+        
+        // Detect web search capability (currently limited detection)
+        boolean hasWebSearch = lowerDescription.contains("web search") ||
+                               lowerDescription.contains("browsing") ||
+                               lowerDescription.contains("real-time information");
+        
+        // Detect vision capability
+        boolean hasVision = lowerModelId.contains("vision") ||
+                           lowerModelId.contains("-v") ||
+                           lowerModelId.contains("multimodal") ||
+                           lowerDescription.contains("vision") ||
+                           lowerDescription.contains("image") ||
+                           lowerDescription.contains("multimodal");
+        
+        // Detect coding capability
+        boolean hasCoding = lowerModelId.contains("coder") ||
+                           lowerModelId.contains("code") ||
+                           lowerModelId.contains("devstral") ||
+                           lowerDescription.contains("coding") ||
+                           lowerDescription.contains("software engineering") ||
+                           lowerDescription.contains("programming");
+        
+        // Detect function calling capability
+        boolean hasFunctionCalling = lowerDescription.contains("function calling") ||
+                                     lowerDescription.contains("tool use") ||
+                                     lowerDescription.contains("structured outputs");
+        
+        // Detect agent capability (most models support this)
+        boolean hasAgent = lowerDescription.contains("agent") ||
+                          lowerDescription.contains("agentic") ||
+                          hasFunctionCalling;
+        
+        // Default context and output limits (can be refined later)
+        int contextLength = 131072; // 128K default
+        int outputLength = 8192;    // 8K default
+        
+        // Adjust context length based on model info
+        if (lowerDescription.contains("128k")) {
+            contextLength = 131072;
+        } else if (lowerDescription.contains("32k")) {
+            contextLength = 32768;
+        }
+        
+        return new ModelCapabilities(
+            hasThinking,
+            hasWebSearch, 
+            hasVision,
+            true, // All text models support chat
+            hasCoding,
+            hasFunctionCalling,
+            hasAgent,
+            contextLength,
+            outputLength
+        );
+    }
+    
     private String toDisplayName(String id) {
         String s = id.replace('-', ' ').replace('_', ' ');
         if (s.isEmpty()) return "DeepInfra";

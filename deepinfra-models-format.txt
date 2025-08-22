@@ -1,0 +1,936 @@
+[
+  {
+    "model_name": "deepseek-ai/DeepSeek-V3.1",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "DeepSeek-V3.1 is post-trained on the top of DeepSeek-V3.1-Base, which is built upon the original V3 base checkpoint through a two-phase long context extension approach, following the methodology outlined in the original DeepSeek-V3 report. We have expanded our dataset by collecting additional long documents and substantially extending both training phases. The 32K extension phase has been increased 10-fold to 630B tokens, while the 128K extension phase has been extended by 3.3x to 209B tokens. Additionally, DeepSeek-V3.1 is trained using the UE8M0 FP8 scale data format to ensure compatibility with microscaling data formats.",
+    "cover_img_url": "https://shared.deepinfra.com/models/deepseek-ai/DeepSeek-V3.1/cover_image.b1ca5b6d9ddec813a34b4134cc8cd9011a7d736c5363eef89d40ce4d7e33516a.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000032,
+      "cents_per_output_token": 0.000115
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "openai/gpt-oss-120b",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "gpt-oss-120b is an open-weight, 117B-parameter Mixture-of-Experts (MoE) language model from OpenAI designed for high-reasoning, agentic, and general-purpose production use cases. The model supports configurable reasoning depth, full chain-of-thought access, and native tool use, including function calling, browsing, and structured output generation.",
+    "cover_img_url": "https://shared.deepinfra.com/models/openai/gpt-oss-120b/cover_image.a422aaee1b1d6446e2ccb86489f79eb77a2143a4d2eef7f4e32a314679cc204a.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000009,
+      "cents_per_output_token": 0.000045
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "zai-org/GLM-4.5V",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "GLM-4.5V is based on ZhipuAI’s next-generation flagship text foundation model GLM-4.5-Air (106B parameters, 12B active). It continues the technical approach of GLM-4.1V-Thinking, achieving SOTA performance among models of the same scale on 42 public vision-language benchmarks. It covers common tasks such as image, video, and document understanding, as well as GUI agent operations.",
+    "cover_img_url": "https://shared.deepinfra.com/models/zai-org/GLM-4.5V/cover_image.dec596f5664ba25a35e27309299b6fa9c5768fd52578bb360b247425d2bb5776.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.00005,
+      "cents_per_output_token": 0.00017
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 1
+  },
+  {
+    "model_name": "openai/gpt-oss-20b",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "gpt-oss-20b is an open-weight 21B parameter model released by OpenAI under the Apache 2.0 license. It uses a Mixture-of-Experts (MoE) architecture with 3.6B active parameters per forward pass, optimized for lower-latency inference. The model is trained in OpenAI’s Harmony response format and supports reasoning level configuration, fine-tuning, and agentic capabilities including function calling, tool use, and structured outputs.",
+    "cover_img_url": "https://shared.deepinfra.com/models/openai/gpt-oss-20b/cover_image.4841ba1e78220022449bec081f219edc092a81653a7a32e8984ddec2d7ad0f3d.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000004,
+      "cents_per_output_token": 0.000016
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "Qwen/Qwen3-Coder-480B-A35B-Instruct-Turbo",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Qwen3-Coder-480B-A35B-Instruct is the Qwen3's most agentic code model, featuring Significant Performance on Agentic Coding, Agentic Browser-Use and other foundational coding tasks, achieving results comparable to Claude Sonnet.",
+    "cover_img_url": "https://shared.deepinfra.com/models/Qwen/Qwen3-Coder-480B-A35B-Instruct-Turbo/cover_image.eda4bf16dbe8f7cb7e0de26fe0e600b3ccc1b5bb33414421fa50d7fbcb227160.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.00003,
+      "cents_per_output_token": 0.00012
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "zai-org/GLM-4.5",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "The GLM-4.5 series models are foundation models designed for intelligent agents. GLM-4.5 has 355 billion total parameters with 32 billion active parameters, while GLM-4.5-Air adopts a more compact design with 106 billion total parameters and 12 billion active parameters. GLM-4.5 models unify reasoning, coding, and intelligent agent capabilities to meet the complex demands of intelligent agent applications.",
+    "cover_img_url": "https://shared.deepinfra.com/models/zai-org/GLM-4.5/cover_image.4c33e3b1f21ba89bd8e5c963c737730c2579575987bded69b986088117089161.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000055,
+      "cents_per_output_token": 0.0002
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "moonshotai/Kimi-K2-Instruct",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Kimi K2 is a large-scale Mixture-of-Experts (MoE) language model developed by Moonshot AI, featuring 1 trillion total parameters with 32 billion active per forward pass. It is optimized for agentic capabilities, including advanced tool use, reasoning, and code synthesis. Kimi K2 excels across a broad range of benchmarks, particularly in coding (LiveCodeBench, SWE-bench), reasoning (ZebraLogic, GPQA), and tool-use (Tau2, AceBench) tasks.",
+    "cover_img_url": "https://shared.deepinfra.com/models/moonshotai/Kimi-K2-Instruct/cover_image.230f1c8c59fda9e70c7a1164c430fdcea4163b21e42923f2c1a58c33284b9e61.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.00005,
+      "cents_per_output_token": 0.0002
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "allenai/olmOCR-7B-0725-FP8",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "olmOCR is a specialized AI tool that converts PDF documents into clean, structured text while preserving important formatting and layout information. What makes olmOCR particularly valuable for developers is its ability to handle challenging PDFs that traditional OCR tools struggle with—including complex layouts, poor-quality scans, handwritten text, and documents with mixed content types. Built on a fine-tuned 7B vision-language model, olmOCR provides enterprise-grade PDF processing at a fraction of the cost of proprietary solutions.",
+    "cover_img_url": "https://shared.deepinfra.com/models/allenai/olmOCR-7B-0725-FP8/cover_image.71dc051781ee539bf76a588020be60a5c41af5b89b344f0cc4c85da930c784f2.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000027,
+      "cents_per_output_token": 0.00015
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "Qwen/Qwen3-235B-A22B-Thinking-2507",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Qwen3-235B-A22B-Thinking-2507 is the Qwen3's new model with scaling the thinking capability of Qwen3-235B-A22B, improving both the quality and depth of reasoning. ",
+    "cover_img_url": "https://shared.deepinfra.com/models/Qwen/Qwen3-235B-A22B-Thinking-2507/cover_image.2b87c6645946388f890b18b46894e32d140913d73154eb6ae428e378916853c3.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000013,
+      "cents_per_output_token": 0.00006
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "Qwen/Qwen3-Coder-480B-A35B-Instruct",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Qwen3-Coder-480B-A35B-Instruct is the Qwen3's most agentic code model, featuring Significant Performance on Agentic Coding, Agentic Browser-Use and other foundational coding tasks, achieving results comparable to Claude Sonnet.",
+    "cover_img_url": "https://shared.deepinfra.com/models/Qwen/Qwen3-Coder-480B-A35B-Instruct/cover_image.d28599e171a40010634df3f9888e4771b4a4029e1ce355338e50ceade04042f0.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.00004,
+      "cents_per_output_token": 0.00016
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "zai-org/GLM-4.5-Air",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "The GLM-4.5 series models are foundation models designed for intelligent agents. GLM-4.5 has 355 billion total parameters with 32 billion active parameters, while GLM-4.5-Air adopts a more compact design with 106 billion total parameters and 12 billion active parameters. GLM-4.5 models unify reasoning, coding, and intelligent agent capabilities to meet the complex demands of intelligent agent applications.",
+    "cover_img_url": "https://shared.deepinfra.com/models/zai-org/GLM-4.5-Air/cover_image.b81d10678c90f1e1151c0945ae63e53ea8de1162b787b0c69907502841ca2500.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.00002,
+      "cents_per_output_token": 0.00011
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "mistralai/Voxtral-Small-24B-2507",
+    "type": "automatic-speech-recognition",
+    "reported_type": "automatic-speech-recognition",
+    "description": "Voxtral Small is an enhancement of Mistral Small 3, incorporating state-of-the-art audio input capabilities while retaining best-in-class text performance. It excels at speech transcription, translation and audio understanding.",
+    "cover_img_url": "https://shared.deepinfra.com/models/mistralai/Voxtral-Small-24B-2507/cover_image.1f3f8f4b5161abfe0b4e5921c3e5716c43524d6a4b6ba4defe1c7ce0dd7041b4.webp",
+    "tags": [],
+    "pricing": {
+      "type": "input_length",
+      "cents_per_input_sec": 0.005
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "mistralai/Voxtral-Mini-3B-2507",
+    "type": "automatic-speech-recognition",
+    "reported_type": "automatic-speech-recognition",
+    "description": "Voxtral Mini is an enhancement of Ministral 3B, incorporating state-of-the-art audio input capabilities while retaining best-in-class text performance. It excels at speech transcription, translation and audio understanding.",
+    "cover_img_url": "https://shared.deepinfra.com/models/mistralai/Voxtral-Mini-3B-2507/cover_image.6253f2cb31c45ecaac1fbb1762685b74edc8c1f146a087fd7bd1d8bf46ef105b.webp",
+    "tags": [],
+    "pricing": {
+      "type": "input_length",
+      "cents_per_input_sec": 0.00166667
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "deepseek-ai/DeepSeek-R1-0528-Turbo",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "The DeepSeek R1 0528 turbo model is a state of the art reasoning model that can generate very quick responses",
+    "cover_img_url": "https://shared.deepinfra.com/models/deepseek-ai/DeepSeek-R1-0528-Turbo/cover_image.c0d90adf386ad20a13ef135dd16a5381140583dece7eaf22b7271385c6e8769f.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.0001,
+      "cents_per_output_token": 0.0003
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "Qwen/Qwen3-235B-A22B-Instruct-2507",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Qwen3-235B-A22B-Instruct-2507 is the updated version of the Qwen3-235B-A22B non-thinking mode, featuring Significant improvements in general capabilities, including instruction following, logical reasoning, text comprehension, mathematics, science, coding and tool usage.  ",
+    "cover_img_url": "https://shared.deepinfra.com/models/Qwen/Qwen3-235B-A22B-Instruct-2507/cover_image.fe0214ec9e1c4865a1d84f18925f599aa94bd8b3da768c500cf6b218e2ff51c5.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000013,
+      "cents_per_output_token": 0.00006
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "Qwen/Qwen3-30B-A3B",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Qwen3 is the latest generation of large language models in Qwen series, offering a comprehensive suite of dense and mixture-of-experts (MoE) models. Built upon extensive training, Qwen3 delivers groundbreaking advancements in reasoning, instruction-following, agent capabilities, and multilingual support",
+    "cover_img_url": "https://shared.deepinfra.com/models/Qwen/Qwen3-30B-A3B/cover_image.099ee65844ad72c97a1e6377194dfb6f695d7164fb006609941438b88ec1b980.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000008,
+      "cents_per_output_token": 0.000029
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "Qwen/Qwen3-32B",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Qwen3 is the latest generation of large language models in Qwen series, offering a comprehensive suite of dense and mixture-of-experts (MoE) models. Built upon extensive training, Qwen3 delivers groundbreaking advancements in reasoning, instruction-following, agent capabilities, and multilingual support",
+    "cover_img_url": "https://shared.deepinfra.com/models/Qwen/Qwen3-32B/cover_image.011f77376c7d6752c9f56907c8fd353c3484a570d3d80f0d61e6fdc03379525b.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.00001,
+      "cents_per_output_token": 0.00003
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "Qwen/Qwen3-14B",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Qwen3 is the latest generation of large language models in Qwen series, offering a comprehensive suite of dense and mixture-of-experts (MoE) models. Built upon extensive training, Qwen3 delivers groundbreaking advancements in reasoning, instruction-following, agent capabilities, and multilingual support. ",
+    "cover_img_url": "https://shared.deepinfra.com/models/Qwen/Qwen3-14B/cover_image.1201f1b95d6039377e39f7e52777b9e669c17ee28df3cf695172dbf189089420.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000006,
+      "cents_per_output_token": 0.000024
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "deepseek-ai/DeepSeek-V3-0324-Turbo",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "",
+    "cover_img_url": "",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.0001,
+      "cents_per_output_token": 0.0003
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "deepseek-ai/DeepSeek-Prover-V2-671B",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "DeepSeek-Prover-V2, an open-source large language model designed for formal theorem proving in Lean 4, with initialization data collected through a recursive theorem proving pipeline powered by DeepSeek-V3. The cold-start training procedure begins by prompting DeepSeek-V3 to decompose complex problems into a series of subgoals. The proofs of resolved subgoals are synthesized into a chain-of-thought process, combined with DeepSeek-V3's step-by-step reasoning, to create an initial cold start for reinforcement learning. ",
+    "cover_img_url": "https://shared.deepinfra.com/models/deepseek-ai/DeepSeek-Prover-V2-671B/cover_image.7875a36ec7d442b8eac4f77ca3f3fd5a4a32d44787e5ff1a99b51223ffb26dc4.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.00005,
+      "cents_per_output_token": 0.000218
+    },
+    "max_tokens": null,
+    "replaced_by": "deepseek-ai/DeepSeek-V3-0324",
+    "deprecated": 1752642068,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "meta-llama/Llama-4-Maverick-17B-128E-Instruct-Turbo",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "The Llama 4 collection of models are natively multimodal AI models that enable text and multimodal experiences. These models leverage a mixture-of-experts architecture to offer industry-leading performance in text and image understanding. Llama 4 Maverick, a 17 billion parameter model with 128 experts",
+    "cover_img_url": "https://shared.deepinfra.com/models/meta-llama/Llama-4-Maverick-17B-128E-Instruct-Turbo/cover_image.a5950122fccf2e7f8ef9de11467cae7871568b670817cd1b5c2d2339db1f941d.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.00005,
+      "cents_per_output_token": 0.00005
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "The Llama 4 collection of models are natively multimodal AI models that enable text and multimodal experiences. These models leverage a mixture-of-experts architecture to offer industry-leading performance in text and image understanding. Llama 4 Maverick, a 17 billion parameter model with 128 experts",
+    "cover_img_url": "https://shared.deepinfra.com/models/meta-llama/Llama-4-Maverick-17B-128E-Instruct-FP8/cover_image.430267c894ab16564dce2f2e8826fbc6e15740e9defaf47c52d683a2eab9a91b.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000015,
+      "cents_per_output_token": 0.00006
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "meta-llama/Llama-4-Scout-17B-16E-Instruct",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "The Llama 4 collection of models are natively multimodal AI models that enable text and multimodal experiences. These models leverage a mixture-of-experts architecture to offer industry-leading performance in text and image understanding. Llama 4 Scout, a 17 billion parameter model with 16 experts",
+    "cover_img_url": "https://shared.deepinfra.com/models/meta-llama/Llama-4-Scout-17B-16E-Instruct/cover_image.8dcc2374ffbf18a0ca87e5bddb0f6b8dbc59890038f5dedc837a3b6793e47413.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000008,
+      "cents_per_output_token": 0.00003
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "deepseek-ai/DeepSeek-R1-0528",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "The DeepSeek R1 model has undergone a minor version upgrade, with the current version being DeepSeek-R1-0528.",
+    "cover_img_url": "https://shared.deepinfra.com/models/deepseek-ai/DeepSeek-R1-0528/cover_image.1c2b6d82000fef8e12c4318b3f5b5d71411fc73bcf000ff2674b32e6af8dba75.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.00005,
+      "cents_per_output_token": 0.000215
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "deepseek-ai/DeepSeek-V3-0324",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "DeepSeek-V3-0324, a strong Mixture-of-Experts (MoE) language model with 671B total parameters with 37B activated for each token, an improved iteration over DeepSeek-V3.",
+    "cover_img_url": "https://shared.deepinfra.com/models/deepseek-ai/DeepSeek-V3-0324/cover_image.2132971065034c302886aaa95cfd9661a96989fbe12ec2d93e78ac4c831bf66d.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000028,
+      "cents_per_output_token": 0.000088
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "mistralai/Devstral-Small-2507",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Devstral is an agentic LLM for software engineering tasks, making it a great choice for software engineering agents.",
+    "cover_img_url": "https://shared.deepinfra.com/models/mistralai/Devstral-Small-2507/cover_image.2ca30682c46317e1838d97ea88feffb2e3deecad1e88dfe314351e825fadd56c.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000007,
+      "cents_per_output_token": 0.000028
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "mistralai/Mistral-Small-3.2-24B-Instruct-2506",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Mistral-Small-3.2-24B-Instruct is a drop-in upgrade over the 3.1 release, with markedly better instruction following, roughly half the infinite-generation errors, and a more robust function-calling interface—while otherwise matching or slightly improving on all previous text and vision benchmarks.",
+    "cover_img_url": "https://shared.deepinfra.com/models/mistralai/Mistral-Small-3.2-24B-Instruct-2506/cover_image.2baa436d9d36ef7306a532f4f6625652dfd092c04b2c23057fb8cdb69e64915d.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000005,
+      "cents_per_output_token": 0.00001
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "microsoft/phi-4-reasoning-plus",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Phi-4-reasoning-plus is a state-of-the-art open-weight reasoning model finetuned from Phi-4 using supervised fine-tuning on a dataset of chain-of-thought traces and reinforcement learning. The supervised fine-tuning dataset includes a blend of synthetic prompts and high-quality filtered data from public domain websites, focused on math, science, and coding skills as well as alignment data for safety and Responsible AI. The goal of this approach was to ensure that small capable models were trained with data focused on high quality and advanced reasoning. Phi-4-reasoning-plus has been trained additionally with Reinforcement Learning, hence, it has higher accuracy but generates on average 50% more tokens, thus having higher latency.",
+    "cover_img_url": "",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000007,
+      "cents_per_output_token": 0.000035
+    },
+    "max_tokens": null,
+    "replaced_by": "microsoft/phi-4",
+    "deprecated": 1754935816,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "meta-llama/Llama-Guard-4-12B",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Llama Guard 4 is a natively multimodal safety classifier with 12 billion parameters trained jointly on text and multiple images. Llama Guard 4 is a dense architecture pruned from the Llama 4 Scout pre-trained model and fine-tuned for content safety classification. Similar to previous versions, it can be used to classify content in both LLM inputs (prompt classification) and in LLM responses (response classification). It itself acts as an LLM: it generates text in its output that indicates whether a given prompt or response is safe or unsafe, and if unsafe, it also lists the content categories violated.",
+    "cover_img_url": "https://shared.deepinfra.com/models/meta-llama/Llama-Guard-4-12B/cover_image.907c11bf5e824fbfadcce17efd86eae1cd697532e8213f6fe75195aeb78622c8.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000018,
+      "cents_per_output_token": 0.000018
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "Qwen/QwQ-32B",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "QwQ is the reasoning model of the Qwen series. Compared with conventional instruction-tuned models, QwQ, which is capable of thinking and reasoning, can achieve significantly enhanced performance in downstream tasks, especially hard problems. QwQ-32B is the medium-sized reasoning model, which is capable of achieving competitive performance against state-of-the-art reasoning models, e.g., DeepSeek-R1, o1-mini.",
+    "cover_img_url": "https://shared.deepinfra.com/models/Qwen/QwQ-32B/cover_image.bfaeb4e5817d3ad2bf6807dbaa7bca6ebea82e4a40915c80048fd770dad7a60b.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.0000075,
+      "cents_per_output_token": 0.000015
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "anthropic/claude-4-opus",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Anthropic’s most powerful model yet and the state-of-the-art coding model. It delivers sustained performance on long-running tasks that require focused effort and thousands of steps, significantly expanding what AI agents can solve. Claude Opus 4 is ideal for powering frontier agent products and features.",
+    "cover_img_url": "https://shared.deepinfra.com/models/anthropic/claude-4-opus/cover_image.751b974708687a8076f1ed6c27922e9cf8d4334135b811e60387e8957ffcd248.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.00165,
+      "cents_per_output_token": 0.00825
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "anthropic/claude-4-sonnet",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Anthropic's mid-size model with superior intelligence for high-volume uses in coding, in-depth research, agents, & more.",
+    "cover_img_url": "https://shared.deepinfra.com/models/anthropic/claude-4-sonnet/cover_image.abb94fa3840b2f233747c56e1877ad22a139fad1fdd205914141f03a786ca74c.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.00033,
+      "cents_per_output_token": 0.00165
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "google/gemini-2.5-flash",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Gemini 2.5 Flash is Google's latest thinking model, designed to tackle increasingly complex problems. It's capable of reasoning through their thoughts before responding, resulting in enhanced performance and improved accuracy.  Gemini 2.5 Flash: best for balancing reasoning and speed.",
+    "cover_img_url": "https://shared.deepinfra.com/models/google/gemini-2.5-flash/cover_image.025fc6ab7df7bcc5d204ce13fa050cb3d950074284c97878d464951f069348b1.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000021,
+      "cents_per_output_token": 0.000175
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "google/gemini-2.5-pro",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Gemini 2.5 Pro is Google's the most advanced thinking model, designed to tackle increasingly complex problems. Gemini 2.5 Pro leads common benchmarks by meaningful margins and showcases strong reasoning and code capabilities.  Gemini 2.5 models are thinking models, capable of reasoning through their thoughts before responding, resulting in enhanced performance and improved accuracy.  The Gemini 2.5 Pro model is now available on DeepInfra.",
+    "cover_img_url": "https://shared.deepinfra.com/models/google/gemini-2.5-pro/cover_image.66dd07a014b824c2e8527348ccd5dd5d023997e1c9c5550414f2503bcb451a3b.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.0000875,
+      "cents_per_output_token": 0.0007
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "google/gemma-3-27b-it",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Gemma 3 introduces multimodality, supporting vision-language input and text outputs. It handles context windows up to 128k tokens, understands over 140 languages, and offers improved math, reasoning, and chat capabilities, including structured outputs and function calling. Gemma 3 27B is Google's latest open source model, successor to Gemma 2",
+    "cover_img_url": "https://shared.deepinfra.com/models/google/gemma-3-27b-it/cover_image.acdca01c69780104ab35653f7dd78efa772e7fd70322b21a7a7bad10fcbb407c.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000009,
+      "cents_per_output_token": 0.000017
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "google/gemma-3-12b-it",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Gemma 3 introduces multimodality, supporting vision-language input and text outputs. It handles context windows up to 128k tokens, understands over 140 languages, and offers improved math, reasoning, and chat capabilities, including structured outputs and function calling. Gemma 3-12B is Google's latest open source model, successor to Gemma 2",
+    "cover_img_url": "https://shared.deepinfra.com/models/google/gemma-3-12b-it/cover_image.cf6000ae6da004859f30be43c0bac891c88749e254c48d70030d0869ab4e59e2.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000005,
+      "cents_per_output_token": 0.00001
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "google/gemma-3-4b-it",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Gemma 3 introduces multimodality, supporting vision-language input and text outputs. It handles context windows up to 128k tokens, understands over 140 languages, and offers improved math, reasoning, and chat capabilities, including structured outputs and function calling. Gemma 3-12B is Google's latest open source model, successor to Gemma 2",
+    "cover_img_url": "https://shared.deepinfra.com/models/google/gemma-3-4b-it/cover_image.48d9c8853fb7236659026bd1467cbb50c1d929aeb9cadb14d2e74f3431939d9c.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000002,
+      "cents_per_output_token": 0.000004
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "hexgrad/Kokoro-82M",
+    "type": "text-to-speech",
+    "reported_type": "text-to-speech",
+    "description": "Kokoro is an open-weight TTS model with 82 million parameters. Despite its lightweight architecture, it delivers comparable quality to larger models while being significantly faster and more cost-efficient. With Apache-licensed weights, Kokoro can be deployed anywhere from production environments to personal projects.",
+    "cover_img_url": "https://shared.deepinfra.com/models/hexgrad/Kokoro-82M/cover_image.f1eff048596a1c36de0985c33410b862d0841ab2ed5d34b9a31c34c98017c748.webp",
+    "tags": [],
+    "pricing": {
+      "type": "input_character_length",
+      "cents_per_input_chars": 0.000062
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "canopylabs/orpheus-3b-0.1-ft",
+    "type": "text-to-speech",
+    "reported_type": "text-to-speech",
+    "description": "Orpheus TTS is a state-of-the-art, Llama-based Speech-LLM designed for high-quality, empathetic text-to-speech generation. This model has been finetuned to deliver human-level speech synthesis, achieving exceptional clarity, expressiveness, and real-time streaming performances.",
+    "cover_img_url": "https://shared.deepinfra.com/models/canopylabs/orpheus-3b-0.1-ft/cover_image.7d9b9bff64d8b37db243f67c58734813839e2ce93ebe1d692e9aff3a0a3e01cf.webp",
+    "tags": [],
+    "pricing": {
+      "type": "input_character_length",
+      "cents_per_input_chars": 0.0007
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "sesame/csm-1b",
+    "type": "text-to-speech",
+    "reported_type": "text-to-speech",
+    "description": "CSM (Conversational Speech Model) is a speech generation model from Sesame that generates RVQ audio codes from text and audio inputs. The model architecture employs a Llama backbone and a smaller audio decoder that produces Mimi audio codes.",
+    "cover_img_url": "https://shared.deepinfra.com/models/sesame/csm-1b/cover_image.e79911aabdd060a3939b5188731bb689a92a627c7e9a0d6e35574937707997ab.webp",
+    "tags": [],
+    "pricing": {
+      "type": "input_character_length",
+      "cents_per_input_chars": 0.0007
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "microsoft/Phi-4-multimodal-instruct",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Phi-4-multimodal-instruct is a lightweight open multimodal foundation model that leverages the language, vision, and speech research and datasets used for Phi-3.5 and 4.0 models. The model processes text, image, and audio inputs, generating text outputs, and comes with 128K token context length. The model underwent an enhancement process, incorporating both supervised fine-tuning, direct preference optimization and RLHF (Reinforcement Learning from Human Feedback) to support precise instruction adherence and safety measures. The languages that each modal supports are the following: - Text: Arabic, Chinese, Czech, Danish, Dutch, English, Finnish, French, German, Hebrew, Hungarian, Italian, Japanese, Korean, Norwegian, Polish, Portuguese, Russian, Spanish, Swedish, Thai, Turkish, Ukrainian - Vision: English - Audio: English, Chinese, German, French, Italian, Japanese, Spanish, Portuguese",
+    "cover_img_url": "https://shared.deepinfra.com/models/microsoft/Phi-4-multimodal-instruct/cover_image.87facac507628c39df27e89fc610915c993148a31a2b580c4ceceb25861a76de.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000005,
+      "cents_per_output_token": 0.00001
+    },
+    "max_tokens": null,
+    "replaced_by": "google/gemma-3-12b-it",
+    "deprecated": 1754935710,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "deepseek-ai/DeepSeek-R1-Distill-Llama-70B",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "DeepSeek-R1-Distill-Llama-70B is a highly efficient language model that leverages knowledge distillation to achieve state-of-the-art performance. This model distills the reasoning patterns of larger models into a smaller, more agile architecture, resulting in exceptional results on benchmarks like AIME 2024, MATH-500, and LiveCodeBench. With 70 billion parameters, DeepSeek-R1-Distill-Llama-70B offers a unique balance of accuracy and efficiency, making it an ideal choice for a wide range of natural language processing tasks. ",
+    "cover_img_url": "https://shared.deepinfra.com/models/deepseek-ai/DeepSeek-R1-Distill-Llama-70B/cover_image.8390f5b9b1330c345b923226e42e74d21c4002336df11becb397a55e3e828958.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.00001,
+      "cents_per_output_token": 0.00004
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "deepseek-ai/DeepSeek-V3",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "DeepSeek-V3, a strong Mixture-of-Experts (MoE) language model with 671B total parameters with 37B activated for each token. To achieve efficient inference and cost-effective training, DeepSeek-V3 adopts Multi-head Latent Attention (MLA) and DeepSeekMoE architectures, which were thoroughly validated in DeepSeek-V2. ",
+    "cover_img_url": "https://shared.deepinfra.com/models/deepseek-ai/DeepSeek-V3/cover_image.8e84763e53c3f507b73dd67368d030a188a74df8923da52e8fea219529a73339.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000038,
+      "cents_per_output_token": 0.000089
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "meta-llama/Llama-3.3-70B-Instruct-Turbo",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Llama 3.3-70B Turbo is a highly optimized version of the Llama 3.3-70B model, utilizing FP8 quantization to deliver significantly faster inference speeds with a minor trade-off in accuracy. The model is designed to be helpful, safe, and flexible, with a focus on responsible deployment and mitigating potential risks such as bias, toxicity, and misinformation. It achieves state-of-the-art performance on various benchmarks, including conversational tasks, language translation, and text generation.",
+    "cover_img_url": "https://shared.deepinfra.com/models/meta-llama/Llama-3.3-70B-Instruct-Turbo/cover_image.4b398fbacb19ee745df560ce0b12f6f1f2cc6e05ae3c28aa82a9af332086b8df.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.0000038,
+      "cents_per_output_token": 0.000012
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "meta-llama/Llama-3.3-70B-Instruct",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Llama 3.3-70B is a multilingual LLM trained on a massive dataset of 15 trillion tokens, fine-tuned for instruction-following and conversational dialogue. The model is designed to be helpful, safe, and flexible, with a focus on responsible deployment and mitigating potential risks such as bias, toxicity, and misinformation. It achieves state-of-the-art performance on various benchmarks, including conversational tasks, language translation, and text generation.",
+    "cover_img_url": "https://shared.deepinfra.com/models/meta-llama/Llama-3.3-70B-Instruct/cover_image.e90aef7bcab5b478ff3608e1b174f2d2e6580188adddacd74c6a24448e61a6db.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000023,
+      "cents_per_output_token": 0.00004
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "microsoft/phi-4",
+    "type": "text-generation",
+    "reported_type": "text-generation",
+    "description": "Phi-4 is a model built upon a blend of synthetic datasets, data from filtered public domain websites, and acquired academic books and Q&A datasets. The goal of this approach was to ensure that small capable models were trained with data focused on high quality and advanced reasoning.",
+    "cover_img_url": "https://shared.deepinfra.com/models/microsoft/phi-4/cover_image.aee3c097e61545c82caae333d0494bd36718766775525b8fe75f6e8a3e5edc9d.webp",
+    "tags": [],
+    "pricing": {
+      "type": "tokens",
+      "cents_per_input_token": 0.000007,
+      "cents_per_output_token": 0.000014
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  },
+  {
+    "model_name": "openai/whisper-large-v3-turbo",
+    "type": "automatic-speech-recognition",
+    "reported_type": "automatic-speech-recognition",
+    "description": "Whisper is a state-of-the-art model for automatic speech recognition (ASR) and speech translation, proposed in the paper \"Robust Speech Recognition via Large-Scale Weak Supervision\" by Alec Radford  et al. from OpenAI. Trained on \u003E5M hours of labeled data, Whisper demonstrates a strong ability to generalise to many datasets and domains in a zero-shot setting. Whisper large-v3-turbo is a finetuned version of a pruned Whisper large-v3. In other words, it's the exact same model, except that the number of decoding layers have reduced from 32 to 4. As a result, the model is way faster, at the expense of a minor quality degradation.",
+    "cover_img_url": "https://shared.deepinfra.com/models/openai/whisper-large-v3-turbo/cover_image.bab5ba9805e51b2e27172aad945f02104612869bc0e6d2c46d6bcbdf608f649a.webp",
+    "tags": [],
+    "pricing": {
+      "type": "input_length",
+      "cents_per_input_sec": 0.000333
+    },
+    "max_tokens": null,
+    "replaced_by": null,
+    "deprecated": null,
+    "quantization": null,
+    "mmlu": null,
+    "expected": null,
+    "private": 0
+  }
+]

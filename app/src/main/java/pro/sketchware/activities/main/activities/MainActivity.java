@@ -61,6 +61,7 @@ import pro.sketchware.utility.UI;
 
 public class MainActivity extends BasePermissionAppCompatActivity {
     private static final String PROJECTS_FRAGMENT_TAG = "projects_fragment";
+    private static final String CHAT_FRAGMENT_TAG = "chat_fragment";
     private ActionBarDrawerToggle drawerToggle;
     private DB u;
     private Snackbar storageAccessDenied;
@@ -73,6 +74,7 @@ public class MainActivity extends BasePermissionAppCompatActivity {
         }
     };
     private ProjectsFragment projectsFragment;
+    private pro.sketchware.fragments.chat.ChatFragment chatFragment;
     private Fragment activeFragment;
     @IdRes
     private int currentNavItemId = R.id.item_projects;
@@ -267,16 +269,22 @@ public class MainActivity extends BasePermissionAppCompatActivity {
             if (id == R.id.item_projects) {
                 navigateToProjectsFragment();
                 return true;
+            } else if (id == R.id.item_chat) {
+                navigateToChatFragment();
+                return true;
             }
             return false;
         });
 
         if (savedInstanceState != null) {
             projectsFragment = (ProjectsFragment) getSupportFragmentManager().findFragmentByTag(PROJECTS_FRAGMENT_TAG);
+            chatFragment = (pro.sketchware.fragments.chat.ChatFragment) getSupportFragmentManager().findFragmentByTag(CHAT_FRAGMENT_TAG);
             currentNavItemId = savedInstanceState.getInt("selected_tab_id");
             Fragment current = getFragmentForNavId(currentNavItemId);
             if (current instanceof ProjectsFragment) {
                 navigateToProjectsFragment();
+            } else if (current instanceof pro.sketchware.fragments.chat.ChatFragment) {
+                navigateToChatFragment();
             }
 
             return;
@@ -288,6 +296,8 @@ public class MainActivity extends BasePermissionAppCompatActivity {
     private Fragment getFragmentForNavId(int navItemId) {
         if (navItemId == R.id.item_projects) {
             return projectsFragment;
+        } else if (navItemId == R.id.item_chat) {
+            return chatFragment;
         }
         throw new IllegalArgumentException();
     }
@@ -318,6 +328,28 @@ public class MainActivity extends BasePermissionAppCompatActivity {
 
         activeFragment = projectsFragment;
         currentNavItemId = R.id.item_projects;
+    }
+
+    private void navigateToChatFragment() {
+        if (chatFragment == null) {
+            chatFragment = new pro.sketchware.fragments.chat.ChatFragment();
+        }
+
+        boolean shouldShow = true;
+        FragmentManager fm = getSupportFragmentManager();
+        FragmentTransaction transaction = fm.beginTransaction();
+
+        binding.createNewProject.hide(); // Hide FAB for chat
+        if (activeFragment != null) transaction.hide(activeFragment);
+        if (fm.findFragmentByTag(CHAT_FRAGMENT_TAG) == null) {
+            shouldShow = false;
+            transaction.add(binding.container.getId(), chatFragment, CHAT_FRAGMENT_TAG);
+        }
+        if (shouldShow) transaction.show(chatFragment);
+        transaction.commit();
+
+        activeFragment = chatFragment;
+        currentNavItemId = R.id.item_chat;
     }
 
     @NonNull

@@ -20,7 +20,6 @@ import com.google.gson.Gson;
 
 import mod.hey.studios.util.Helper;
 import pro.sketchware.R;
-import pro.sketchware.activities.about.fragments.BetaChangesFragment;
 import pro.sketchware.activities.about.models.AboutAppViewModel;
 import pro.sketchware.activities.about.models.AboutResponseModel;
 import pro.sketchware.databinding.ActivityAboutAppBinding;
@@ -83,7 +82,8 @@ public class AboutActivity extends BaseAppCompatActivity {
         @NonNull
         @Override
         public Fragment createFragment(int position) {
-            return new BetaChangesFragment();
+            // Beta changes page removed; return an empty fragment placeholder
+            return new Fragment();
         }
 
         @Override

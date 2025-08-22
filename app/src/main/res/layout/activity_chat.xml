@@ -32,7 +32,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="4dp"
+                android:padding="0dp"
                 android:contentDescription="Go back"
                 android:src="@drawable/ic_mtrl_arrow_left"
                 app:tint="?attr/colorOnSurface" />
@@ -60,7 +60,7 @@
                 android:clickable="true"
                 android:focusable="true"
                 android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="4dp"
+                android:padding="0dp"
                 android:contentDescription="More options"
                 android:src="@drawable/ic_mtrl_more_vertical"
                 app:tint="?attr/colorOnSurface" />
@@ -70,7 +70,7 @@
         <!-- Divider -->
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="1dp"
             app:dividerColor="?attr/colorOutlineVariant" />
 
     </com.google.android.material.appbar.AppBarLayout>

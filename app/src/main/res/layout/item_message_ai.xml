@@ -65,7 +65,7 @@
                     android:id="@+id/text_message_content"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="To implement a RecyclerView in Android with proper adapter pattern, you'll need to follow these steps:\n\n1. Create your data model\n2. Design your item layout\n3. Create the adapter class\n4. Set up the RecyclerView in your activity\n\nHere's a complete example:\n\n```java\npublic class MyAdapter extends RecyclerView.Adapter<MyAdapter.ViewHolder> {\n    // Implementation here\n}\n```"
+                    android:text="To implement a RecyclerView in Android with proper adapter pattern, you'll need to follow these steps:\n\n1. Create your data model\n2. Design your item layout\n3. Create the adapter class\n4. Set up the RecyclerView in your activity\n\nHere's a complete example:\n\n```java\npublic class MyAdapter extends RecyclerView.Adapter&lt;MyAdapter.ViewHolder&gt; {\n    // Implementation here\n}\n```"
                     android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
                     android:textColor="?attr/colorOnSurface"
                     android:textIsSelectable="true"

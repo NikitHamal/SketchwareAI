@@ -8,87 +8,103 @@
     android:fitsSystemWindows="true">
 
     <!-- Main Content Area -->
-    <FrameLayout
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingBottom="80dp">
 
-        <!-- Conversation List -->
-        <androidx.recyclerview.widget.RecyclerView
-            android:id="@+id/recycler_conversations"
+        <!-- New Conversation Button -->
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/button_new_conversation"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:clipToPadding="false"
-            android:paddingTop="8dp"
-            android:paddingBottom="16dp"
-            android:paddingHorizontal="16dp"
-            android:scrollbars="none"
-            android:overScrollMode="ifContentScrolls" />
+            android:layout_height="wrap_content"
+            android:layout_margin="16dp"
+            android:text="New conversation"
+            android:textAppearance="@style/TextAppearance.Material3.LabelLarge"
+            android:textColor="?attr/colorOnPrimary"
+            android:background="@drawable/bg_new_conversation_button"
+            android:paddingVertical="16dp"
+            android:elevation="2dp"
+            android:stateListAnimator="@null"
+            app:backgroundTint="@null"
+            app:icon="@drawable/ic_mtrl_add"
+            app:iconGravity="textStart"
+            app:iconSize="24dp"
+            app:iconTint="?attr/colorOnPrimary"
+            android:contentDescription="Start new conversation" />
 
-        <!-- Empty State -->
-        <LinearLayout
-            android:id="@+id/layout_empty_state"
+        <!-- Content Container -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="vertical"
-            android:gravity="center"
-            android:padding="32dp"
-            android:visibility="visible">
+            android:layout_height="0dp"
+            android:layout_weight="1">
 
-            <!-- AI Assistant Icon -->
-            <com.google.android.material.card.MaterialCardView
-                android:layout_width="80dp"
-                android:layout_height="80dp"
-                app:cardCornerRadius="40dp"
-                app:cardElevation="0dp"
-                app:strokeWidth="0dp"
-                app:cardBackgroundColor="?attr/colorPrimaryContainer">
+            <!-- Conversation List -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/recycler_conversations"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:clipToPadding="false"
+                android:paddingTop="8dp"
+                android:paddingBottom="16dp"
+                android:paddingHorizontal="16dp"
+                android:scrollbars="none"
+                android:overScrollMode="ifContentScrolls" />
 
-                <ImageView
-                    android:layout_width="40dp"
-                    android:layout_height="40dp"
-                    android:layout_gravity="center"
-                    android:src="@drawable/ic_mtrl_chat"
-                    app:tint="?attr/colorOnPrimaryContainer" />
+            <!-- Empty State -->
+            <LinearLayout
+                android:id="@+id/layout_empty_state"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="32dp"
+                android:visibility="visible">
 
-            </com.google.android.material.card.MaterialCardView>
+                <!-- AI Assistant Icon -->
+                <com.google.android.material.card.MaterialCardView
+                    android:layout_width="80dp"
+                    android:layout_height="80dp"
+                    app:cardCornerRadius="40dp"
+                    app:cardElevation="0dp"
+                    app:strokeWidth="0dp"
+                    app:cardBackgroundColor="?attr/colorPrimaryContainer">
 
-            <!-- Greeting Text -->
-            <TextView
-                android:id="@+id/text_greeting"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Welcome to SketchAI"
-                android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
-                android:textColor="?attr/colorOnSurface"
-                android:layout_marginTop="24dp"
-                android:layout_marginBottom="8dp"
-                android:gravity="center" />
+                    <ImageView
+                        android:layout_width="40dp"
+                        android:layout_height="40dp"
+                        android:layout_gravity="center"
+                        android:src="@drawable/ic_mtrl_chat"
+                        app:tint="?attr/colorOnPrimaryContainer" />
 
-            <!-- Description -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Start a new conversation to get coding assistance, debug help, and project guidance."
-                android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
-                android:textColor="?attr/colorOnSurfaceVariant"
-                android:gravity="center" />
+                </com.google.android.material.card.MaterialCardView>
 
-        </LinearLayout>
+                <!-- Greeting Text -->
+                <TextView
+                    android:id="@+id/text_greeting"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Welcome to SketchAI"
+                    android:textAppearance="@style/TextAppearance.Material3.HeadlineSmall"
+                    android:textColor="?attr/colorOnSurface"
+                    android:layout_marginTop="24dp"
+                    android:layout_marginBottom="8dp"
+                    android:gravity="center" />
 
-    </FrameLayout>
+                <!-- Description -->
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Start a new conversation to get coding assistance, debug help, and project guidance."
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="?attr/colorOnSurfaceVariant"
+                    android:gravity="center" />
 
-    <!-- Floating Action Button for New Conversation -->
-    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-        android:id="@+id/fab_new_conversation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="end|bottom"
-        android:layout_marginEnd="16dp"
-        android:layout_marginBottom="16dp"
-        android:text="New conversation"
-        app:icon="@drawable/ic_mtrl_add"
-        app:iconSize="24dp"
-        app:layout_behavior="com.google.android.material.behavior.HideViewOnScrollBehavior"
-        android:contentDescription="Start new conversation" />
+            </LinearLayout>
+
+        </FrameLayout>
+
+    </LinearLayout>
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>

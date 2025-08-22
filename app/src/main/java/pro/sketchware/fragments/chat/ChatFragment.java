@@ -47,7 +47,7 @@ public class ChatFragment extends qA {
         super.onViewCreated(view, savedInstanceState);
         
         setupRecyclerView();
-        setupFabButton();
+        setupNewConversationButton();
         loadConversations();
     }
 
@@ -68,8 +68,8 @@ public class ChatFragment extends qA {
         binding.recyclerConversations.setAdapter(conversationAdapter);
     }
 
-    private void setupFabButton() {
-        binding.fabNewConversation.setOnClickListener(v -> createNewConversation());
+    private void setupNewConversationButton() {
+        binding.buttonNewConversation.setOnClickListener(v -> createNewConversation());
     }
 
     private void loadConversations() {

@@ -318,6 +318,7 @@ public class MainActivity extends BasePermissionAppCompatActivity {
         FragmentTransaction transaction = fm.beginTransaction();
 
         binding.createNewProject.show();
+        binding.appbar.setVisibility(View.VISIBLE); // Show search bar for projects
         if (activeFragment != null) transaction.hide(activeFragment);
         if (fm.findFragmentByTag(PROJECTS_FRAGMENT_TAG) == null) {
             shouldShow = false;
@@ -340,6 +341,7 @@ public class MainActivity extends BasePermissionAppCompatActivity {
         FragmentTransaction transaction = fm.beginTransaction();
 
         binding.createNewProject.hide(); // Hide FAB for chat
+        binding.appbar.setVisibility(View.GONE); // Hide search bar for chat
         if (activeFragment != null) transaction.hide(activeFragment);
         if (fm.findFragmentByTag(CHAT_FRAGMENT_TAG) == null) {
             shouldShow = false;

@@ -35,6 +35,10 @@ public class DeepInfraApiClient implements ApiClient {
     private static final String TAG = "DeepInfraApiClient";
     private static final String DI_CHAT = "https://api.deepinfra.com/v1/openai/chat/completions";
     private static final String DI_MODELS_FEATURED = "https://api.deepinfra.com/models/featured";
+    private static final String SP_NAME = "ai_deepinfra_models";
+    private static final String SP_JSON = "di_models_json";
+    private static final String SP_TS = "di_models_ts";
+    private static final long DAY_MS = 24L * 60L * 60L * 1000L;
 
     private final Context context;
     private final AIActionListener actionListener;
@@ -200,6 +204,17 @@ public class DeepInfraApiClient implements ApiClient {
     @Override
     public List<AIModel> fetchModels() {
         List<AIModel> out = new ArrayList<>();
+        SharedPreferences sp = context.getSharedPreferences(SP_NAME, Context.MODE_PRIVATE);
+        long ts = sp.getLong(SP_TS, 0L);
+        String cached = sp.getString(SP_JSON, null);
+
+        // 1) Use fresh cache if available
+        if (cached != null && (System.currentTimeMillis() - ts) < DAY_MS) {
+            List<AIModel> cachedModels = parseModelsJson(cached);
+            if (!cachedModels.isEmpty()) return cachedModels;
+        }
+
+        // 2) Fetch from network
         try {
             OkHttpClient client = httpClient.newBuilder().readTimeout(30, TimeUnit.SECONDS).build();
             Request req = new Request.Builder()
@@ -210,52 +225,60 @@ public class DeepInfraApiClient implements ApiClient {
             try (Response r = client.newCall(req).execute()) {
                 if (r.isSuccessful() && r.body() != null) {
                     String body = new String(r.body().bytes(), StandardCharsets.UTF_8);
-                    try {
-                        SharedPreferences sp = context.getSharedPreferences("ai_deepinfra_models", Context.MODE_PRIVATE);
-                        sp.edit().putString("di_models_json", body).putLong("di_models_ts", System.currentTimeMillis()).apply();
-                    } catch (Exception ignore) {}
-
-                    try {
-                        JsonElement root = JsonParser.parseString(body);
-                        if (root.isJsonArray()) {
-                            JsonArray arr = root.getAsJsonArray();
-                            for (JsonElement e : arr) {
-                                if (!e.isJsonObject()) continue;
-                                JsonObject m = e.getAsJsonObject();
-                                
-                                // Filter by type - only text generation models
-                                String type = m.has("type") ? m.get("type").getAsString() : "";
-                                if (!"text-generation".equalsIgnoreCase(type)) continue;
-                                
-                                // Skip deprecated models
-                                if (m.has("deprecated") && !m.get("deprecated").isJsonNull()) continue;
-                                
-                                // Skip private models (private: 1)
-                                if (m.has("private") && m.get("private").getAsInt() == 1) continue;
-                                
-                                String id = m.has("model_name") ? m.get("model_name").getAsString() : null;
-                                if (id == null || id.isEmpty()) continue;
-                                
-                                String description = m.has("description") ? m.get("description").getAsString() : "";
-                                
-                                // Detect model capabilities based on description and model name
-                                ModelCapabilities caps = detectModelCapabilities(id, description);
-                                
-                                out.add(new AIModel(id, toDisplayName(id), AIProvider.DEEPINFRA, caps));
-                            }
-                        }
-                    } catch (Exception parseErr) {
-                        Log.w(TAG, "DeepInfra models parse failed", parseErr);
-                    }
+                    // Save cache
+                    try { sp.edit().putString(SP_JSON, body).putLong(SP_TS, System.currentTimeMillis()).apply(); } catch (Exception ignore) {}
+                    out = parseModelsJson(body);
                 }
             }
         } catch (Exception ex) {
             Log.w(TAG, "DeepInfra models fetch failed", ex);
         }
+
+        // 3) If network parse failed or empty, try stale cache as fallback
+        if (out.isEmpty() && cached != null) {
+            List<AIModel> cachedModels = parseModelsJson(cached);
+            if (!cachedModels.isEmpty()) return cachedModels;
+        }
+
+        // 4) Final hardcoded fallback
         if (out.isEmpty()) {
-            // Fallback model if API fails
             ModelCapabilities fallbackCaps = detectModelCapabilities("deepseek-v3", "DeepSeek V3 is a powerful reasoning model with excellent coding and chat capabilities");
             out.add(new AIModel("deepseek-v3", "DeepInfra DeepSeek V3", AIProvider.DEEPINFRA, fallbackCaps));
+        }
+        return out;
+    }
+
+    private List<AIModel> parseModelsJson(String body) {
+        List<AIModel> out = new ArrayList<>();
+        if (body == null || body.isEmpty()) return out;
+        try {
+            JsonElement root = JsonParser.parseString(body);
+            if (!root.isJsonArray()) return out;
+            JsonArray arr = root.getAsJsonArray();
+            for (JsonElement e : arr) {
+                if (!e.isJsonObject()) continue;
+                JsonObject m = e.getAsJsonObject();
+
+                // Filter by type - only text generation models
+                String type = m.has("type") ? m.get("type").getAsString() : "";
+                if (!"text-generation".equalsIgnoreCase(type)) continue;
+
+                // Skip deprecated models
+                if (m.has("deprecated") && !m.get("deprecated").isJsonNull()) continue;
+
+                // Skip private models (private: 1)
+                if (m.has("private") && m.get("private").getAsInt() == 1) continue;
+
+                String id = m.has("model_name") ? m.get("model_name").getAsString() : null;
+                if (id == null || id.isEmpty()) continue;
+
+                String description = m.has("description") ? m.get("description").getAsString() : "";
+
+                ModelCapabilities caps = detectModelCapabilities(id, description);
+                out.add(new AIModel(id, toDisplayName(id), AIProvider.DEEPINFRA, caps));
+            }
+        } catch (Exception parseErr) {
+            Log.w(TAG, "DeepInfra models parse failed", parseErr);
         }
         return out;
     }
@@ -263,7 +286,7 @@ public class DeepInfraApiClient implements ApiClient {
     private ModelCapabilities detectModelCapabilities(String modelId, String description) {
         String lowerModelId = modelId.toLowerCase();
         String lowerDescription = description.toLowerCase();
-        
+
         // Detect thinking capability
         boolean hasThinking = lowerModelId.contains("thinking") || 
                              lowerModelId.contains("reasoning") ||

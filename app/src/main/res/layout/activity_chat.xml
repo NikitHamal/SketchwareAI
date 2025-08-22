@@ -4,7 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface">
+    android:background="?attr/colorSurface"
+    android:fitsSystemWindows="true">
 
     <!-- Top Section - Toolbar -->
     <com.google.android.material.appbar.AppBarLayout
@@ -29,13 +30,13 @@
                 <!-- Back Arrow -->
                 <ImageView
                     android:id="@+id/button_back"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:layout_marginStart="8dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="0dp"
+                    android:padding="12dp"
                     android:contentDescription="Go back"
                     android:src="@drawable/ic_mtrl_arrow_left"
                     app:tint="?attr/colorOnSurface"
@@ -46,13 +47,13 @@
                 <!-- More Options -->
                 <ImageView
                     android:id="@+id/button_more_options"
-                    android:layout_width="24dp"
-                    android:layout_height="24dp"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
                     android:layout_marginEnd="8dp"
                     android:clickable="true"
                     android:focusable="true"
                     android:background="?attr/selectableItemBackgroundBorderless"
-                    android:padding="0dp"
+                    android:padding="12dp"
                     android:contentDescription="More options"
                     android:src="@drawable/ic_mtrl_more_vertical"
                     app:tint="?attr/colorOnSurface"
@@ -126,7 +127,7 @@
                 android:orientation="vertical"
                 android:gravity="center"
                 android:padding="32dp"
-                android:visibility="visible">
+                android:visibility="gone">
 
                 <!-- AI Assistant Icon -->
                 <com.google.android.material.card.MaterialCardView
@@ -175,7 +176,7 @@
         <com.google.android.material.divider.MaterialDivider
             android:id="@+id/divider_input"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="1dp"
             app:layout_constraintBottom_toTopOf="@+id/layout_input_section"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
@@ -229,6 +230,7 @@
                     android:inputType="textMultiLine|textCapSentences"
                     android:maxLines="4"
                     android:scrollbars="vertical"
+                    android:imeOptions="actionSend"
                     android:paddingHorizontal="12dp"
                     android:paddingVertical="12dp"
                     android:minHeight="40dp" />
@@ -280,6 +282,7 @@
                         android:clickable="true"
                         android:focusable="true"
                         android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Select AI model"
                         android:layout_marginStart="8dp"
                         android:paddingHorizontal="4dp"
                         android:paddingVertical="4dp">

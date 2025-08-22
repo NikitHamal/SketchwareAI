@@ -9,12 +9,14 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Toast;
+import android.widget.RadioGroup;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 
 import com.besome.sketch.lib.base.BaseAppCompatActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.radiobutton.MaterialRadioButton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,9 @@ public class ChatActivity extends BaseAppCompatActivity {
     private AIManager aiManager;
     private Conversation currentConversation;
     private String conversationId;
+    // Streaming state
+    private ChatMessage streamingMessage = null;
+    private int streamingMessagePosition = -1;
     
     // Chat settings
     private boolean thinkingModeEnabled = true;
@@ -82,31 +87,6 @@ public class ChatActivity extends BaseAppCompatActivity {
         // Configure edge-to-edge if available
         try {
             enableEdgeToEdgeNoContrast();
-            
-            // Handle window insets for edge-to-edge design
-            androidx.core.view.ViewCompat.setOnApplyWindowInsetsListener(binding.getRoot(), (v, insets) -> {
-                androidx.core.graphics.Insets systemBars = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.systemBars());
-                androidx.core.graphics.Insets ime = insets.getInsets(androidx.core.view.WindowInsetsCompat.Type.ime());
-                
-                // Apply top inset to AppBarLayout
-                binding.appBarLayout.setPadding(
-                    binding.appBarLayout.getPaddingLeft(),
-                    systemBars.top,
-                    binding.appBarLayout.getPaddingRight(),
-                    binding.appBarLayout.getPaddingBottom()
-                );
-                
-                // Apply bottom inset to input section
-                int bottomInset = Math.max(systemBars.bottom, ime.bottom);
-                binding.layoutInputSection.setPadding(
-                    binding.layoutInputSection.getPaddingLeft(),
-                    binding.layoutInputSection.getPaddingTop(),
-                    binding.layoutInputSection.getPaddingRight(),
-                    12 + bottomInset // 12dp base padding + system inset
-                );
-                
-                return insets;
-            });
         } catch (Exception e) {
             // Fallback for older versions
         }
@@ -156,6 +136,19 @@ public class ChatActivity extends BaseAppCompatActivity {
         
         // Model selector
         binding.layoutModelSelector.setOnClickListener(v -> showModelSelection());
+        
+        // Send via keyboard IME action
+        binding.editTextMessage.setOnEditorActionListener((v, actionId, event) -> {
+            // Trigger send for actionId == EditorInfo.IME_ACTION_SEND or when newline with empty modifiers
+            try {
+                int sendId = android.view.inputmethod.EditorInfo.IME_ACTION_SEND;
+                if (actionId == sendId) {
+                    sendMessage();
+                    return true;
+                }
+            } catch (Exception ignored) {}
+            return false;
+        });
         
         // Text change listener for send button state
         binding.editTextMessage.addTextChangedListener(new TextWatcher() {
@@ -256,7 +249,17 @@ public class ChatActivity extends BaseAppCompatActivity {
             public void onAiRequestStarted() {
                 runOnUiThread(() -> {
                     binding.buttonSend.setEnabled(false);
-                    // TODO: Show loading indicator
+                    // Create a placeholder AI message for streaming updates
+                    streamingMessage = new ChatMessage(
+                        UUID.randomUUID().toString(),
+                        "",
+                        ChatMessage.SENDER_AI,
+                        selectedModel
+                    );
+                    currentConversation.addMessage(streamingMessage);
+                    streamingMessagePosition = currentConversation.getMessages().size() - 1;
+                    updateMessagesUI();
+                    conversationManager.saveConversation(currentConversation);
                 });
             }
             
@@ -264,30 +267,40 @@ public class ChatActivity extends BaseAppCompatActivity {
             public void onAiRequestCompleted() {
                 runOnUiThread(() -> {
                     binding.buttonSend.setEnabled(true);
-                    // TODO: Hide loading indicator
                 });
             }
             
             @Override
             public void onAiStreamUpdate(String partialResponse, boolean isFinal) {
                 runOnUiThread(() -> {
-                    // TODO: Update AI message with streaming content
+                    if (streamingMessage != null) {
+                        streamingMessage.setContent(partialResponse);
+                        if (streamingMessagePosition >= 0) {
+                            messageAdapter.notifyItemChanged(streamingMessagePosition);
+                            binding.recyclerChatMessages.scrollToPosition(messageAdapter.getItemCount() - 1);
+                        } else {
+                            messageAdapter.notifyDataSetChanged();
+                        }
+                    }
                 });
             }
             
             @Override
             public void onAiResponseComplete(String fullResponse, String modelName) {
                 runOnUiThread(() -> {
-                    ChatMessage aiMessage = new ChatMessage(
-                        UUID.randomUUID().toString(),
-                        fullResponse,
-                        ChatMessage.SENDER_AI,
-                        modelName
-                    );
-                    
-                    currentConversation.addMessage(aiMessage);
-                    updateMessagesUI();
-                    conversationManager.saveConversation(currentConversation);
+                    if (streamingMessage != null) {
+                        streamingMessage.setContent(fullResponse);
+                        streamingMessage.setModelName(modelName);
+                        if (streamingMessagePosition >= 0) {
+                            messageAdapter.notifyItemChanged(streamingMessagePosition);
+                        } else {
+                            messageAdapter.notifyDataSetChanged();
+                        }
+                        conversationManager.saveConversation(currentConversation);
+                        // Reset streaming state
+                        streamingMessage = null;
+                        streamingMessagePosition = -1;
+                    }
                     
                     // Update conversation title if it's the first exchange
                     if (currentConversation.getMessages().size() == 2) {
@@ -373,30 +386,54 @@ public class ChatActivity extends BaseAppCompatActivity {
             return;
         }
         
-        // Set current selection
+        // Populate RadioGroup dynamically
+        modelBinding.radioGroupModels.removeAllViews();
         AIModel currentModel = aiManager.getSelectedModel();
+        String currentModelId = currentModel != null ? currentModel.getModelId() : null;
+        int precheckedId = -1;
         for (int i = 0; i < models.size(); i++) {
-            if (models.get(i).equals(currentModel)) {
-                // TODO: Set radio button selection
-                break;
+            AIModel m = models.get(i);
+            MaterialRadioButton rb = new MaterialRadioButton(this);
+            rb.setId(View.generateViewId());
+            rb.setText(m.getDisplayName());
+            rb.setTag(i);
+            // Match layout style
+            rb.setLayoutParams(new RadioGroup.LayoutParams(
+                    RadioGroup.LayoutParams.MATCH_PARENT,
+                    RadioGroup.LayoutParams.WRAP_CONTENT
+            ));
+            rb.setPadding(rb.getPaddingLeft() + 12, rb.getPaddingTop() + 12, rb.getPaddingRight() + 12, rb.getPaddingBottom() + 12);
+            modelBinding.radioGroupModels.addView(rb);
+            if (currentModelId != null && currentModelId.equals(m.getModelId())) {
+                precheckedId = rb.getId();
             }
         }
+        if (precheckedId != -1) {
+            modelBinding.radioGroupModels.check(precheckedId);
+        }
         
+        // Build and show once, keep reference for proper dismiss
         dialog.setView(modelBinding.getRoot());
-        
-        modelBinding.buttonCancel.setOnClickListener(v -> dialog.create().dismiss());
+        final androidx.appcompat.app.AlertDialog shown = dialog.create();
+        shown.show();
+
+        modelBinding.buttonCancel.setOnClickListener(v -> shown.dismiss());
         modelBinding.buttonSelect.setOnClickListener(v -> {
-            // TODO: Get selected model from radio group
-            AIModel newModel = models.get(0); // Placeholder - should get from radio selection
-            aiManager.setSelectedModel(newModel);
-            selectedModel = newModel.getDisplayName();
-            binding.textSelectedModel.setText(selectedModel);
-            dialog.create().dismiss();
+            int checkedId = modelBinding.radioGroupModels.getCheckedRadioButtonId();
+            if (checkedId != -1) {
+                View checked = modelBinding.radioGroupModels.findViewById(checkedId);
+                Object tag = checked != null ? checked.getTag() : null;
+                if (tag instanceof Integer) {
+                    AIModel newModel = models.get((int) tag);
+                    aiManager.setSelectedModel(newModel);
+                    selectedModel = newModel.getDisplayName();
+                    binding.textSelectedModel.setText(selectedModel);
+                }
+            }
+            shown.dismiss();
         });
-        
-        modelBinding.buttonCloseDialog.setOnClickListener(v -> dialog.create().dismiss());
-        
-        dialog.show();
+
+        modelBinding.buttonCloseDialog.setOnClickListener(v -> shown.dismiss());
     }
     
     private void showConversationOptions() {

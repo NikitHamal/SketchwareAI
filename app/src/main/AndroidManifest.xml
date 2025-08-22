@@ -269,6 +269,10 @@
         <activity
             android:name="pro.sketchware.activities.about.AboutActivity"
             android:configChanges="orientation|screenSize" />
+        <activity
+            android:name="pro.sketchware.activities.chat.ChatActivity"
+            android:configChanges="orientation|screenSize"
+            android:theme="@style/Theme.SketchwarePro" />
         <activity android:name="mod.jbk.editor.manage.library.ExcludeBuiltInLibrariesActivity" />
         <activity
             android:name="com.besome.sketch.editor.manage.view.PresetSettingActivity"

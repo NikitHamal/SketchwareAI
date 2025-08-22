@@ -20,6 +20,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -28,6 +29,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.besome.sketch.lib.base.BasePermissionAppCompatActivity;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseApp;
@@ -319,6 +321,11 @@ public class MainActivity extends BasePermissionAppCompatActivity {
 
         binding.createNewProject.show();
         binding.appbar.setVisibility(View.VISIBLE); // Show search bar for projects
+        // Restore scroll behavior for projects fragment
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) binding.container.getLayoutParams();
+        params.setBehavior(new AppBarLayout.ScrollingViewBehavior());
+        binding.container.setLayoutParams(params);
+        
         if (activeFragment != null) transaction.hide(activeFragment);
         if (fm.findFragmentByTag(PROJECTS_FRAGMENT_TAG) == null) {
             shouldShow = false;
@@ -342,6 +349,11 @@ public class MainActivity extends BasePermissionAppCompatActivity {
 
         binding.createNewProject.hide(); // Hide FAB for chat
         binding.appbar.setVisibility(View.GONE); // Hide search bar for chat
+        // Remove scroll behavior for chat fragment
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) binding.container.getLayoutParams();
+        params.setBehavior(null);
+        binding.container.setLayoutParams(params);
+        
         if (activeFragment != null) transaction.hide(activeFragment);
         if (fm.findFragmentByTag(CHAT_FRAGMENT_TAG) == null) {
             shouldShow = false;

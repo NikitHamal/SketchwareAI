@@ -23,47 +23,62 @@
             android:background="?attr/colorSurface"
             app:layout_scrollFlags="scroll|enterAlways">
 
-            <!-- Back Arrow -->
-            <ImageView
-                android:id="@+id/button_back"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginEnd="16dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="0dp"
-                android:contentDescription="Go back"
-                android:src="@drawable/ic_mtrl_arrow_left"
-                app:tint="?attr/colorOnSurface" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <!-- Conversation Title -->
-            <TextView
-                android:id="@+id/text_conversation_title"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="New Conversation"
-                android:textSize="18sp"
-                android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
-                android:textColor="?attr/colorOnSurface"
-                android:maxLines="1"
-                android:ellipsize="end"
-                tools:text="How to implement RecyclerView in Android" />
+                <!-- Back Arrow -->
+                <ImageView
+                    android:id="@+id/button_back"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginStart="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="0dp"
+                    android:contentDescription="Go back"
+                    android:src="@drawable/ic_mtrl_arrow_left"
+                    app:tint="?attr/colorOnSurface"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
 
-            <!-- More Options -->
-            <ImageView
-                android:id="@+id/button_more_options"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:layout_marginStart="16dp"
-                android:clickable="true"
-                android:focusable="true"
-                android:background="?attr/selectableItemBackgroundBorderless"
-                android:padding="0dp"
-                android:contentDescription="More options"
-                android:src="@drawable/ic_mtrl_more_vertical"
-                app:tint="?attr/colorOnSurface" />
+                <!-- More Options -->
+                <ImageView
+                    android:id="@+id/button_more_options"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_marginEnd="8dp"
+                    android:clickable="true"
+                    android:focusable="true"
+                    android:background="?attr/selectableItemBackgroundBorderless"
+                    android:padding="0dp"
+                    android:contentDescription="More options"
+                    android:src="@drawable/ic_mtrl_more_vertical"
+                    app:tint="?attr/colorOnSurface"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent" />
+
+                <!-- Conversation Title -->
+                <TextView
+                    android:id="@+id/text_conversation_title"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="New Conversation"
+                    android:textSize="18sp"
+                    android:textAppearance="@style/TextAppearance.Material3.TitleMedium"
+                    android:textColor="?attr/colorOnSurface"
+                    android:maxLines="1"
+                    android:ellipsize="end"
+                    app:layout_constraintStart_toEndOf="@id/button_back"
+                    app:layout_constraintEnd_toStartOf="@id/button_more_options"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    tools:text="How to implement RecyclerView in Android" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
 
         </com.google.android.material.appbar.MaterialToolbar>
 

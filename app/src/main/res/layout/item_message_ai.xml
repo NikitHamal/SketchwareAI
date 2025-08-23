@@ -7,38 +7,17 @@
     android:orientation="vertical"
     android:padding="8dp">
 
-    <!-- AI Message Container -->
+    <!-- AI Message Container (full width) -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:gravity="start">
 
-        <!-- AI Avatar -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="32dp"
-            android:layout_height="32dp"
-            android:layout_marginEnd="12dp"
-            android:layout_marginTop="4dp"
-            app:cardCornerRadius="16dp"
-            app:cardElevation="0dp"
-            app:strokeWidth="0dp"
-            app:cardBackgroundColor="?attr/colorSecondaryContainer">
-
-            <ImageView
-                android:layout_width="18dp"
-                android:layout_height="18dp"
-                android:layout_gravity="center"
-                android:src="@drawable/ic_mtrl_chat"
-                app:tint="?attr/colorOnSecondaryContainer" />
-
-        </com.google.android.material.card.MaterialCardView>
-
         <!-- Message Content (Full width available) -->
         <LinearLayout
-            android:layout_width="0dp"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_weight="1"
             android:orientation="vertical">
 
             <!-- Model Name -->
@@ -51,6 +30,32 @@
                 android:textColor="?attr/colorOnSurfaceVariant"
                 android:layout_marginBottom="4dp"
                 tools:text="GPT-4" />
+
+            <!-- Thinking indicator row (hidden when not streaming) -->
+            <LinearLayout
+                android:id="@+id/layout_thinking"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:visibility="gone"
+                android:layout_marginBottom="4dp">
+
+                <ProgressBar
+                    style="@android:style/Widget.DeviceDefault.Small"
+                    android:layout_width="16dp"
+                    android:layout_height="16dp"
+                    android:indeterminate="true" />
+
+                <TextView
+                    android:id="@+id/text_thinking"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:text="Thinking…"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+            </LinearLayout>
 
             <!-- Message Content Card -->
             <LinearLayout
@@ -83,10 +88,10 @@
                     <!-- Copy Button -->
                     <ImageView
                         android:id="@+id/button_copy_message"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
                         android:layout_marginEnd="8dp"
-                        android:padding="6dp"
+                        android:padding="4dp"
                         android:clickable="true"
                         android:focusable="true"
                         android:background="?attr/selectableItemBackgroundBorderless"
@@ -97,10 +102,10 @@
                     <!-- Share Button -->
                     <ImageView
                         android:id="@+id/button_share_message"
-                        android:layout_width="32dp"
-                        android:layout_height="32dp"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
                         android:layout_marginEnd="8dp"
-                        android:padding="6dp"
+                        android:padding="4dp"
                         android:clickable="true"
                         android:focusable="true"
                         android:background="?attr/selectableItemBackgroundBorderless"

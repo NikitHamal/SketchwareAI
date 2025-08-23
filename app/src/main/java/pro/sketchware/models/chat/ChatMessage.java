@@ -9,6 +9,7 @@ public class ChatMessage {
     private int sender;
     private long timestamp;
     private String modelName;
+    private boolean streaming;
     
     public ChatMessage(String id, String content, int sender) {
         this.id = id;
@@ -28,10 +29,12 @@ public class ChatMessage {
     public int getSender() { return sender; }
     public long getTimestamp() { return timestamp; }
     public String getModelName() { return modelName; }
+    public boolean isStreaming() { return streaming; }
 
     // Setters
     public void setContent(String content) { this.content = content; }
     public void setModelName(String modelName) { this.modelName = modelName; }
+    public void setStreaming(boolean streaming) { this.streaming = streaming; }
 
     // Utility methods
     public boolean isFromUser() { return sender == SENDER_USER; }

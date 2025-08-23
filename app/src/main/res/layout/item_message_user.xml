@@ -7,31 +7,35 @@
     android:orientation="vertical"
     android:padding="8dp">
 
-    <!-- User Message Container -->
-    <LinearLayout
+    <!-- Use ConstraintLayout row so bubble can wrap but not exceed 80% width -->
+    <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="end">
+        android:layout_height="wrap_content">
 
-        <!-- Spacer to push message to right (20% width) -->
-        <View
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_weight="0.2" />
-
-        <!-- Message Content (80% max width) -->
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="0dp"
+        <!-- 20% start guideline to cap bubble width to remaining 80% -->
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/guideline_start_20"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.8"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.2" />
+
+        <!-- Message Content (wrap, capped by guideline) -->
+        <com.google.android.material.card.MaterialCardView
+            android:id="@+id/card_user_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             app:cardCornerRadius="16dp"
             app:cardElevation="0dp"
             app:strokeWidth="0dp"
-            app:cardBackgroundColor="?attr/colorPrimary">
+            app:cardBackgroundColor="?attr/colorPrimary"
+            app:layout_constrainedWidth="true"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@id/guideline_start_20"
+            app:layout_constraintTop_toTopOf="parent">
 
             <LinearLayout
-                android:layout_width="match_parent"
+                android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
                 android:padding="12dp">
@@ -64,6 +68,6 @@
 
         </com.google.android.material.card.MaterialCardView>
 
-    </LinearLayout>
+    </androidx.constraintlayout.widget.ConstraintLayout>
 
 </LinearLayout>

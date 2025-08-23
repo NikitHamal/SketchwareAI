@@ -165,7 +165,7 @@ public class ChatActivity extends BaseAppCompatActivity {
         });
         
         // Update model selector text
-        binding.textSelectedModel.setText(selectedModel);
+        binding.textSelectedModel.setText(cleanModelName(selectedModel));
         
         // Initially disable send button
         binding.buttonSend.setEnabled(false);
@@ -192,7 +192,7 @@ public class ChatActivity extends BaseAppCompatActivity {
         AIModel model = aiManager.getSelectedModel();
         if (model != null) {
             selectedModel = model.getDisplayName();
-            binding.textSelectedModel.setText(selectedModel);
+            binding.textSelectedModel.setText(cleanModelName(selectedModel));
         }
         
         // Load available models if not loaded
@@ -204,7 +204,7 @@ public class ChatActivity extends BaseAppCompatActivity {
                     AIModel currentModel = aiManager.getSelectedModel();
                     if (currentModel != null) {
                         selectedModel = currentModel.getDisplayName();
-                        binding.textSelectedModel.setText(selectedModel);
+                        binding.textSelectedModel.setText(cleanModelName(selectedModel));
                     }
                 });
             }
@@ -256,6 +256,7 @@ public class ChatActivity extends BaseAppCompatActivity {
                         ChatMessage.SENDER_AI,
                         selectedModel
                     );
+                    streamingMessage.setStreaming(true);
                     currentConversation.addMessage(streamingMessage);
                     streamingMessagePosition = currentConversation.getMessages().size() - 1;
                     updateMessagesUI();
@@ -275,6 +276,7 @@ public class ChatActivity extends BaseAppCompatActivity {
                 runOnUiThread(() -> {
                     if (streamingMessage != null) {
                         streamingMessage.setContent(partialResponse);
+                        streamingMessage.setStreaming(!isFinal);
                         if (streamingMessagePosition >= 0) {
                             messageAdapter.notifyItemChanged(streamingMessagePosition);
                             binding.recyclerChatMessages.scrollToPosition(messageAdapter.getItemCount() - 1);
@@ -291,6 +293,7 @@ public class ChatActivity extends BaseAppCompatActivity {
                     if (streamingMessage != null) {
                         streamingMessage.setContent(fullResponse);
                         streamingMessage.setModelName(modelName);
+                        streamingMessage.setStreaming(false);
                         if (streamingMessagePosition >= 0) {
                             messageAdapter.notifyItemChanged(streamingMessagePosition);
                         } else {
@@ -395,7 +398,7 @@ public class ChatActivity extends BaseAppCompatActivity {
             AIModel m = models.get(i);
             MaterialRadioButton rb = new MaterialRadioButton(this);
             rb.setId(View.generateViewId());
-            rb.setText(m.getDisplayName());
+            rb.setText(cleanModelName(m.getDisplayName()));
             rb.setTag(i);
             // Match layout style
             rb.setLayoutParams(new RadioGroup.LayoutParams(
@@ -427,7 +430,7 @@ public class ChatActivity extends BaseAppCompatActivity {
                     AIModel newModel = models.get((int) tag);
                     aiManager.setSelectedModel(newModel);
                     selectedModel = newModel.getDisplayName();
-                    binding.textSelectedModel.setText(selectedModel);
+                    binding.textSelectedModel.setText(cleanModelName(selectedModel));
                 }
             }
             shown.dismiss();
@@ -456,8 +459,23 @@ public class ChatActivity extends BaseAppCompatActivity {
     }
     
     private void showRenameDialog() {
-        // TODO: Implement rename dialog
-        Toast.makeText(this, "Rename functionality will be implemented", Toast.LENGTH_SHORT).show();
+        final android.widget.EditText input = new android.widget.EditText(this);
+        input.setText(currentConversation.getTitle());
+        input.setSelection(input.getText().length());
+        input.setSingleLine(true);
+        new MaterialAlertDialogBuilder(this)
+            .setTitle("Rename Conversation")
+            .setView(input)
+            .setPositiveButton("Save", (d, w) -> {
+                String newTitle = input.getText().toString().trim();
+                if (!newTitle.isEmpty()) {
+                    currentConversation.setTitle(newTitle);
+                    binding.textConversationTitle.setText(newTitle);
+                    conversationManager.saveConversation(currentConversation);
+                }
+            })
+            .setNegativeButton("Cancel", null)
+            .show();
     }
     
     private void clearMessages() {

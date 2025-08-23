@@ -94,22 +94,34 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public void bind(ChatMessage message) {
             binding.textMessageContent.setText(message.getContent());
             binding.textTimestamp.setText(timeFormat.format(new Date(message.getTimestamp())));
-            
-            // Set model name
+
+            // Format model name to remove provider prefix if present
             String modelName = message.getModelName();
             if (modelName != null && !modelName.isEmpty()) {
-                binding.textModelName.setText(modelName);
+                String display = modelName;
+                int slash = modelName.lastIndexOf('/');
+                if (slash >= 0 && slash < modelName.length() - 1) {
+                    display = modelName.substring(slash + 1);
+                }
+                binding.textModelName.setText(display);
             } else {
                 binding.textModelName.setText("AI Assistant");
             }
-            
+
+            // Thinking/streaming state: show thinking row, hide actions while streaming
+            boolean isStreaming = message.isStreaming();
+            binding.layoutThinking.setVisibility(isStreaming ? android.view.View.VISIBLE : android.view.View.GONE);
+            int actionsVisibility = isStreaming ? android.view.View.GONE : android.view.View.VISIBLE;
+            binding.buttonCopyMessage.setVisibility(actionsVisibility);
+            binding.buttonShareMessage.setVisibility(actionsVisibility);
+
             // Set click listeners for action buttons
             binding.buttonCopyMessage.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onCopyMessage(message);
                 }
             });
-            
+
             binding.buttonShareMessage.setOnClickListener(v -> {
                 if (listener != null) {
                     listener.onShareMessage(message);

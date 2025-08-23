@@ -20,7 +20,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     private static final int VIEW_TYPE_USER = 0;
     private static final int VIEW_TYPE_AI = 1;
     
-    private final List<ChatMessage> messages;
+    private List<ChatMessage> messages;
     private final OnMessageActionListener listener;
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
     
@@ -32,6 +32,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     public ChatMessageAdapter(List<ChatMessage> messages, OnMessageActionListener listener) {
         this.messages = messages;
         this.listener = listener;
+    }
+
+    public void setMessages(List<ChatMessage> messages) {
+        this.messages = messages;
+        notifyDataSetChanged();
     }
 
     @Override
@@ -65,6 +70,24 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     }
 
     @Override
+    public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position, @NonNull List<Object> payloads) {
+        if (payloads.isEmpty()) {
+            super.onBindViewHolder(holder, position, payloads);
+            return;
+        }
+
+        // Handle payload-based updates for streaming
+        if (holder instanceof AIMessageViewHolder) {
+            ChatMessage message = messages.get(position);
+            for (Object payload : payloads) {
+                if ("STREAM_UPDATE".equals(payload)) {
+                    ((AIMessageViewHolder) holder).updateContent(message.getContent());
+                }
+            }
+        }
+    }
+
+    @Override
     public int getItemCount() {
         return messages.size();
     }
@@ -75,6 +98,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public UserMessageViewHolder(ItemMessageUserBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
+        }
+
+        public void updateContent(String content) {
+            binding.textMessageContent.setText(content);
         }
 
         public void bind(ChatMessage message) {

@@ -59,20 +59,23 @@ public class ChatActivity extends BaseAppCompatActivity {
         binding = ActivityChatBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
         
-        // Get conversation ID from intent
-        conversationId = getIntent().getStringExtra(EXTRA_CONVERSATION_ID);
-        if (conversationId == null) {
-            finish();
-            return;
-        }
-        
         conversationManager = ConversationManager.getInstance(this);
         aiManager = AIManager.getInstance(this);
-        currentConversation = conversationManager.getConversation(conversationId);
         
-        if (currentConversation == null) {
-            finish();
-            return;
+        // Get conversation ID from intent. If it's null, it's a new conversation.
+        conversationId = getIntent().getStringExtra(EXTRA_CONVERSATION_ID);
+        if (conversationId != null) {
+            currentConversation = conversationManager.getConversation(conversationId);
+            if (currentConversation == null) {
+                // Invalid ID, treat as new conversation or finish?
+                // For now, let's finish to avoid issues. A toast could be helpful.
+                Toast.makeText(this, "Conversation not found.", Toast.LENGTH_SHORT).show();
+                finish();
+                return;
+            }
+        } else {
+            // It's a new conversation, currentConversation remains null until first message.
+            currentConversation = null;
         }
         
         setupUI();
@@ -93,15 +96,29 @@ public class ChatActivity extends BaseAppCompatActivity {
     }
     
     private void setupToolbar() {
-        binding.textConversationTitle.setText(currentConversation.getTitle());
-        
-        binding.buttonBack.setOnClickListener(v -> finish());
-        
-        binding.buttonMoreOptions.setOnClickListener(v -> showConversationOptions());
+        binding.toolbar.setNavigationOnClickListener(v -> finish());
+        binding.toolbar.setOnMenuItemClickListener(item -> {
+            if (item.getItemId() == R.id.action_more_options) {
+                if (currentConversation != null) {
+                    showConversationOptions();
+                }
+                return true;
+            }
+            return false;
+        });
+
+        if (currentConversation != null) {
+            binding.toolbar.setTitle(currentConversation.getTitle());
+            binding.toolbar.getMenu().findItem(R.id.action_more_options).setVisible(true);
+        } else {
+            binding.toolbar.setTitle("New Conversation");
+            binding.toolbar.getMenu().findItem(R.id.action_more_options).setVisible(false);
+        }
     }
     
     private void setupMessagesSection() {
-        messageAdapter = new ChatMessageAdapter(currentConversation.getMessages(), new ChatMessageAdapter.OnMessageActionListener() {
+        List<ChatMessage> messages = (currentConversation != null) ? currentConversation.getMessages() : new ArrayList<>();
+        messageAdapter = new ChatMessageAdapter(messages, new ChatMessageAdapter.OnMessageActionListener() {
             @Override
             public void onCopyMessage(ChatMessage message) {
                 copyMessageToClipboard(message);
@@ -172,7 +189,7 @@ public class ChatActivity extends BaseAppCompatActivity {
     }
     
     private void loadMessages() {
-        if (currentConversation.getMessages().isEmpty()) {
+        if (currentConversation == null || currentConversation.getMessages().isEmpty()) {
             binding.layoutEmptyMessages.setVisibility(View.VISIBLE);
             binding.recyclerChatMessages.setVisibility(View.GONE);
         } else {
@@ -221,6 +238,15 @@ public class ChatActivity extends BaseAppCompatActivity {
     private void sendMessage() {
         String messageText = binding.editTextMessage.getText().toString().trim();
         if (messageText.isEmpty()) return;
+
+        boolean isNewConversation = (currentConversation == null);
+        if (isNewConversation) {
+            // This is the first message. Create the conversation.
+            conversationId = UUID.randomUUID().toString();
+            currentConversation = new Conversation(conversationId, "New Conversation"); // Temp title
+            messageAdapter.setMessages(currentConversation.getMessages());
+            binding.toolbar.getMenu().findItem(R.id.action_more_options).setVisible(true);
+        }
         
         // Create user message
         ChatMessage userMessage = new ChatMessage(
@@ -239,7 +265,7 @@ public class ChatActivity extends BaseAppCompatActivity {
         // Save conversation
         conversationManager.saveConversation(currentConversation);
         
-        // TODO: Send to AI and handle response
+        // Send to AI
         sendToAI(messageText);
     }
     
@@ -278,8 +304,22 @@ public class ChatActivity extends BaseAppCompatActivity {
                         streamingMessage.setContent(partialResponse);
                         streamingMessage.setStreaming(!isFinal);
                         if (streamingMessagePosition >= 0) {
-                            messageAdapter.notifyItemChanged(streamingMessagePosition);
-                            binding.recyclerChatMessages.scrollToPosition(messageAdapter.getItemCount() - 1);
+
+                            LinearLayoutManager layoutManager = (LinearLayoutManager) binding.recyclerChatMessages.getLayoutManager();
+                            boolean isAtBottom = false;
+                            if (layoutManager != null) {
+                                int lastVisible = layoutManager.findLastCompletelyVisibleItemPosition();
+                                int totalCount = messageAdapter.getItemCount();
+                                if (lastVisible >= totalCount - 2) {
+                                    isAtBottom = true;
+                                }
+                            }
+
+                            messageAdapter.notifyItemChanged(streamingMessagePosition, "STREAM_UPDATE");
+
+                            if (isAtBottom) {
+                                binding.recyclerChatMessages.scrollToPosition(messageAdapter.getItemCount() - 1);
+                            }
                         } else {
                             messageAdapter.notifyDataSetChanged();
                         }
@@ -337,7 +377,7 @@ public class ChatActivity extends BaseAppCompatActivity {
             firstMessage.substring(0, 30) + "..." : firstMessage;
         
         currentConversation.setTitle(title);
-        binding.textConversationTitle.setText(title);
+        binding.toolbar.setTitle(title);
         conversationManager.saveConversation(currentConversation);
     }
     
@@ -470,7 +510,7 @@ public class ChatActivity extends BaseAppCompatActivity {
                 String newTitle = input.getText().toString().trim();
                 if (!newTitle.isEmpty()) {
                     currentConversation.setTitle(newTitle);
-                    binding.textConversationTitle.setText(newTitle);
+                    binding.toolbar.setTitle(newTitle);
                     conversationManager.saveConversation(currentConversation);
                 }
             })

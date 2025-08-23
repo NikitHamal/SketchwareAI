@@ -5,7 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical"
-    android:padding="8dp">
+    android:padding="8dp"
+    android:gravity="end">
 
     <!-- Use ConstraintLayout row so bubble can wrap but not exceed 80% width -->
     <androidx.constraintlayout.widget.ConstraintLayout

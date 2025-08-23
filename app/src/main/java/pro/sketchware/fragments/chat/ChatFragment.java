@@ -90,8 +90,8 @@ public class ChatFragment extends qA {
     }
 
     private void createNewConversation() {
-        String conversationId = conversationManager.createNewConversation("New Conversation");
-        openChatActivity(conversationId);
+        // A null ID indicates a new conversation.
+        openChatActivity(null);
     }
 
     private void openChatActivity(String conversationId) {

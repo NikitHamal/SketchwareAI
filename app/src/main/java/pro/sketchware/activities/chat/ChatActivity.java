@@ -516,4 +516,10 @@ public class ChatActivity extends BaseAppCompatActivity {
         shareIntent.putExtra(Intent.EXTRA_TEXT, message.getContent());
         startActivity(Intent.createChooser(shareIntent, "Share message"));
     }
+
+    private String cleanModelName(String modelName) {
+        if (modelName == null) return "";
+        // Simple cleaning, can be expanded later
+        return modelName.replace(" (gated)", "").trim();
+    }
 }

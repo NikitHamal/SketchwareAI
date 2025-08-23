@@ -100,10 +100,6 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
             this.binding = binding;
         }
 
-        public void updateContent(String content) {
-            binding.textMessageContent.setText(content);
-        }
-
         public void bind(ChatMessage message) {
             binding.textMessageContent.setText(message.getContent());
             binding.textTimestamp.setText(timeFormat.format(new Date(message.getTimestamp())));
@@ -116,6 +112,10 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         public AIMessageViewHolder(ItemMessageAiBinding binding) {
             super(binding.getRoot());
             this.binding = binding;
+        }
+
+        public void updateContent(String content) {
+            binding.textMessageContent.setText(content);
         }
 
         public void bind(ChatMessage message) {

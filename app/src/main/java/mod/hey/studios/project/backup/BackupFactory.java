@@ -320,6 +320,22 @@ public class BackupFactory {
         }
     }
 
+    private void copyJavaFiles(File source, File destination) {
+        if (!source.exists()) return;
+        if (!destination.exists()) destination.mkdirs();
+
+        File[] files = source.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    copyJavaFiles(file, destination);
+                } else if (file.getName().endsWith(".java") || file.getName().endsWith(".kt")) {
+                    copy(file, new File(destination, file.getName()));
+                }
+            }
+        }
+    }
+
     private static void addFileToZip(File rootPath, File srcFile, ZipOutputStream zip) throws Exception {
 
         if (srcFile.isDirectory()) {
@@ -670,6 +686,10 @@ public class BackupFactory {
             projectMap.put("my_app_name", appName);
             projectMap.put("sketchware_ver", 6);
 
+            // Enable Material Components
+            projectMap.put("compat_theme", "1");
+            projectMap.put("compat_theme_name", "Theme.MaterialComponents.Light.NoActionBar");
+
             File projectFileDir = getProjectPath().getParentFile();
             if (projectFileDir != null && !projectFileDir.exists()) {
                 Log.d("BackupFactory", "Creating project directory: " + projectFileDir.getAbsolutePath());
@@ -682,7 +702,7 @@ public class BackupFactory {
             }
 
             Log.d("BackupFactory", "Copying source files");
-            copy(new File(appFolder, "src/main/java"), getJavaFilesPath());
+            copyJavaFiles(new File(appFolder, "src/main/java"), getJavaFilesPath());
             copy(new File(appFolder, "src/main/res"), getResourcesPath());
             copy(new File(appFolder, "src/main/assets"), getAssetsPath());
             copy(new File(appFolder, "src/main/jniLibs"), getNativeLibsPath());

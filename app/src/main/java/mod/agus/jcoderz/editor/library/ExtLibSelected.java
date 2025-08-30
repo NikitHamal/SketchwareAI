@@ -1,6 +1,6 @@
 package mod.agus.jcoderz.editor.library;
 
-import a.a.a.BuiltInLibraryManager;
+import pro.sketchware.util.library.BuiltInLibraryManager;
 import mod.agus.jcoderz.handle.component.ConstVarComponent;
 import mod.jbk.build.BuiltInLibraries;
 
@@ -27,10 +27,10 @@ public class ExtLibSelected {
             kp.addLibrary(BuiltInLibraries.LOTTIE);
         }
         if (component.isYoutubePlayerUsed) {
-            kp.addLibrary(BuiltInLibraries.YOUTUBE_PLAYER);
+            kp.addLibrary(BuiltInLibraries.ANDROID_YOUTUBE_PLAYER);
         }
         if (component.isCircleImageViewUsed) {
-            kp.addLibrary(BuiltInLibraries.CIRCLE_IMAGEVIEW);
+            kp.addLibrary(BuiltInLibraries.CIRCLEIMAGEVIEW);
         }
         if (component.isFBGoogleUsed) {
             kp.addLibrary(BuiltInLibraries.PLAY_SERVICES_AUTH);
@@ -39,7 +39,7 @@ public class ExtLibSelected {
             kp.addLibrary(BuiltInLibraries.OTPVIEW);
         }
         if (component.isCodeViewUsed) {
-            kp.addLibrary(BuiltInLibraries.CODE_VIEW);
+            kp.addLibrary(BuiltInLibraries.CODEVIEW);
         }
         if (component.isPatternLockViewUsed) {
             kp.addLibrary(BuiltInLibraries.PATTERN_LOCK_VIEW);

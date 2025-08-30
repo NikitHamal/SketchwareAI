@@ -74,8 +74,6 @@ import java.util.regex.Pattern;
 import a.a.a.Gx;
 import a.a.a.kC;
 import a.a.a.lC;
-import a.a.a.sy;
-import a.a.a.ty;
 import a.a.a.wB;
 import a.a.a.wq;
 import a.a.a.yB;
@@ -127,7 +125,7 @@ public class ViewPane extends RelativeLayout {
         resetView(true);
         viewInfos = new ArrayList<>();
         if (rootLayout != null) {
-            ((ty) rootLayout).setChildScrollEnabled(true);
+            ((ScrollContainer) rootLayout).setChildScrollEnabled(true);
         }
     }
 
@@ -161,12 +159,12 @@ public class ViewPane extends RelativeLayout {
     public void removeView(ViewBean viewBean) {
         ViewGroup viewGroup = rootLayout.findViewWithTag(viewBean.parent);
         viewGroup.removeView(rootLayout.findViewWithTag(viewBean.id));
-        if (viewGroup instanceof ty) {
-            ((ty) viewGroup).a();
+        if (viewGroup instanceof ScrollContainer) {
+            ((ScrollContainer) viewGroup).reindexChildren();
         }
     }
 
-    public sy g(ViewBean viewBean) {
+    public ItemView g(ViewBean viewBean) {
         View findViewWithTag;
         String preId = viewBean.preId;
         if (preId != null && !preId.isEmpty() && !preId.equals(viewBean.id)) {
@@ -180,10 +178,10 @@ public class ViewPane extends RelativeLayout {
             findViewWithTag = rootLayout.findViewWithTag(viewBean.id);
         }
         updateItemView(findViewWithTag, viewBean);
-        return (sy) findViewWithTag;
+        return (ItemView) findViewWithTag;
     }
 
-    public sy d(ViewBean viewBean) {
+    public ItemView d(ViewBean viewBean) {
         View findViewWithTag = rootLayout.findViewWithTag(viewBean.id);
         if (viewBean.id.charAt(0) == '_') {
             findViewWithTag = findViewWithTag(viewBean.id);
@@ -192,7 +190,7 @@ public class ViewPane extends RelativeLayout {
         if (str != null && !str.isEmpty() && !viewBean.parent.equals(viewBean.preParent)) {
             ViewGroup viewGroup = rootLayout.findViewWithTag(viewBean.preParent);
             viewGroup.removeView(findViewWithTag);
-            ((ty) viewGroup).a();
+            ((ScrollContainer) viewGroup).reindexChildren();
             addViewAndUpdateIndex(findViewWithTag);
         } else if (viewBean.index != viewBean.preIndex) {
             ((ViewGroup) rootLayout.findViewWithTag(viewBean.parent)).removeView(findViewWithTag);
@@ -203,7 +201,7 @@ public class ViewPane extends RelativeLayout {
         viewBean.preParent = "";
         viewBean.preParentType = -1;
         findViewWithTag.setVisibility(VISIBLE);
-        return (sy) findViewWithTag;
+        return (ItemView) findViewWithTag;
     }
 
     public void initialize(String sc_id, boolean isPreviewMode) {
@@ -233,7 +231,7 @@ public class ViewPane extends RelativeLayout {
             } else {
                 addDroppableForViewGroup(viewBean, rootLayout);
             }
-            ((ty) rootLayout).setChildScrollEnabled(false);
+            ((ScrollContainer) rootLayout).setChildScrollEnabled(false);
         }
     }
 
@@ -304,7 +302,7 @@ public class ViewPane extends RelativeLayout {
         };
         item.setId(++b);
         item.setTag(viewBean.id);
-        ((sy) item).setBean(viewBean);
+        ((ItemView) item).setBean(viewBean);
         updateItemView(item, viewBean);
         return item;
     }
@@ -318,7 +316,7 @@ public class ViewPane extends RelativeLayout {
         InjectRootLayoutManager manager = new InjectRootLayoutManager(sc_id);
         var currentBean = manager.toBean(fileName);
         View rootView = createItemView(currentBean);
-        if (rootView instanceof sy sy) {
+        if (rootView instanceof ItemView sy) {
             sy.setFixed(true);
         }
         if (rootLayout != null) {
@@ -326,7 +324,7 @@ public class ViewPane extends RelativeLayout {
         } else {
             rootLayout = (ViewGroup) rootView;
         }
-        if (rootLayout instanceof sy sy) {
+        if (rootLayout instanceof ItemView sy) {
             if (!currentBean.isEqual(sy.getBean())) {
                 rootLayout = (ViewGroup) rootView;
             }
@@ -417,7 +415,8 @@ public class ViewPane extends RelativeLayout {
                             xmlToSvgConverter.setImageVectorFromFile(tempImageView, xmlToSvgConverter.getVectorFullPath(DesignActivity.sc_id, viewBean.image.resName));
                         }
                     }
-                } catch (Exception ignored) {}
+                } catch (Exception ignored) {
+                }
             }
             view.setRotation(viewBean.image.rotate);
             view.setAlpha(viewBean.alpha);
@@ -622,7 +621,7 @@ public class ViewPane extends RelativeLayout {
         }
     }
 
-    public sy findItemViewByTag(String str) {
+    public ItemView findItemViewByTag(String str) {
         View findViewWithTag = null;
         if (str.charAt(0) == '_') {
             findViewWithTag = findViewWithTag(str);
@@ -631,8 +630,8 @@ public class ViewPane extends RelativeLayout {
                 findViewWithTag = rootLayout.findViewWithTag(str);
             }
         }
-        if (findViewWithTag instanceof sy) {
-            return (sy) findViewWithTag;
+        if (findViewWithTag instanceof ItemView) {
+            return (ItemView) findViewWithTag;
         }
         return null;
     }
@@ -684,7 +683,7 @@ public class ViewPane extends RelativeLayout {
             viewBean.preParent = viewBean.parent;
             viewBean.parent = "root";
             viewBean.preParentType = viewBean.parentType;
-            if (rootLayout instanceof sy sy) {
+            if (rootLayout instanceof ItemView sy) {
                 viewBean.parentType = sy.getBean().type;
             } else {
                 viewBean.parentType = ViewBean.VIEW_TYPE_LAYOUT_LINEAR;
@@ -970,15 +969,15 @@ public class ViewPane extends RelativeLayout {
     }
 
     public void addViewAndUpdateIndex(View view) {
-        ViewBean bean = ((sy) view).getBean();
+        ViewBean bean = ((ItemView) view).getBean();
         if (rootLayout != null) {
             ViewGroup viewGroup = rootLayout.findViewWithTag(bean.parent);
             viewGroup.addView(view, bean.index);
             if (bean.parentType == ViewBean.VIEW_TYPE_LAYOUT_RELATIVE) {
                 updateRelativeParentViews(view, new InjectAttributeHandler(bean));
             }
-            if (viewGroup instanceof ty) {
-                ((ty) viewGroup).a();
+            if (viewGroup instanceof ScrollContainer scrollContainer) {
+                scrollContainer.reindexChildren();
             }
         }
     }
@@ -1063,7 +1062,7 @@ public class ViewPane extends RelativeLayout {
 
         for (int i = 0; i < parent.getChildCount(); i++) {
             var child = parent.getChildAt(i);
-            if (child instanceof sy editorItem) {
+            if (child instanceof ItemView editorItem) {
                 updateRelative(child, new InjectAttributeHandler(editorItem.getBean()));
             }
         }

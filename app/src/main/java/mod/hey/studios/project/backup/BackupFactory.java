@@ -37,6 +37,9 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import javax.crypto.Cipher;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -266,6 +269,25 @@ public class BackupFactory {
 
     private String getReceiversPath(String sc_id) {
         return new File(Environment.getExternalStorageDirectory(), ".sketchware/data/" + sc_id + "/files/broadcast").getAbsolutePath();
+    }
+
+    private String getGradleValue(String gradleContent, String key) {
+        Pattern pattern = Pattern.compile(key + "\\s*=?\\s*\"([^\"]+)\"");
+        Matcher matcher = pattern.matcher(gradleContent);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        pattern = Pattern.compile(key + "\\s*=?\\s*'([^']+)'");
+        matcher = pattern.matcher(gradleContent);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        pattern = Pattern.compile(key + "\\s*=?\\s*([\\d\\.]+)");
+        matcher = pattern.matcher(gradleContent);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return "";
     }
 
     private String getLocalLibraryPath(String sc_id) {

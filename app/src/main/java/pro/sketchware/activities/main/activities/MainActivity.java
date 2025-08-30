@@ -20,6 +20,7 @@ import androidx.activity.OnBackPressedCallback;
 import androidx.annotation.IdRes;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.coordinatorlayout.widget.CoordinatorLayout;
 import androidx.core.app.ActivityCompat;
 import androidx.core.splashscreen.SplashScreen;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -28,6 +29,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import com.besome.sketch.lib.base.BasePermissionAppCompatActivity;
+import com.google.android.material.appbar.AppBarLayout;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.snackbar.Snackbar;
 import com.google.firebase.FirebaseApp;
@@ -52,7 +54,6 @@ import mod.tyron.backup.SingleCopyTask;
 import pro.sketchware.R;
 import pro.sketchware.activities.about.AboutActivity;
 import pro.sketchware.activities.main.fragments.projects.ProjectsFragment;
-import pro.sketchware.activities.main.fragments.projects_store.ProjectsStoreFragment;
 import pro.sketchware.databinding.MainBinding;
 import pro.sketchware.lib.base.BottomSheetDialogView;
 import pro.sketchware.utility.DataResetter;
@@ -62,7 +63,6 @@ import pro.sketchware.utility.UI;
 
 public class MainActivity extends BasePermissionAppCompatActivity {
     private static final String PROJECTS_FRAGMENT_TAG = "projects_fragment";
-    private static final String PROJECTS_STORE_FRAGMENT_TAG = "projects_store_fragment";
     private static final String CHAT_FRAGMENT_TAG = "chat_fragment";
     private ActionBarDrawerToggle drawerToggle;
     private DB u;
@@ -76,8 +76,7 @@ public class MainActivity extends BasePermissionAppCompatActivity {
         }
     };
     private ProjectsFragment projectsFragment;
-    private ProjectsStoreFragment projectsStoreFragment;
-    private pro.sketchware.activities.chat.fragments.ChatFragment chatFragment;
+    private pro.sketchware.fragments.chat.ChatFragment chatFragment;
     private Fragment activeFragment;
     @IdRes
     private int currentNavItemId = R.id.item_projects;
@@ -272,9 +271,6 @@ public class MainActivity extends BasePermissionAppCompatActivity {
             if (id == R.id.item_projects) {
                 navigateToProjectsFragment();
                 return true;
-            } else if (id == R.id.item_sketchub) {
-                navigateToSketchubFragment();
-                return true;
             } else if (id == R.id.item_chat) {
                 navigateToChatFragment();
                 return true;
@@ -284,15 +280,12 @@ public class MainActivity extends BasePermissionAppCompatActivity {
 
         if (savedInstanceState != null) {
             projectsFragment = (ProjectsFragment) getSupportFragmentManager().findFragmentByTag(PROJECTS_FRAGMENT_TAG);
-            projectsStoreFragment = (ProjectsStoreFragment) getSupportFragmentManager().findFragmentByTag(PROJECTS_STORE_FRAGMENT_TAG);
-            chatFragment = (pro.sketchware.activities.chat.fragments.ChatFragment) getSupportFragmentManager().findFragmentByTag(CHAT_FRAGMENT_TAG);
+            chatFragment = (pro.sketchware.fragments.chat.ChatFragment) getSupportFragmentManager().findFragmentByTag(CHAT_FRAGMENT_TAG);
             currentNavItemId = savedInstanceState.getInt("selected_tab_id");
             Fragment current = getFragmentForNavId(currentNavItemId);
             if (current instanceof ProjectsFragment) {
                 navigateToProjectsFragment();
-            } else if (current instanceof ProjectsStoreFragment) {
-                navigateToSketchubFragment();
-            } else if (current instanceof pro.sketchware.activities.chat.fragments.ChatFragment) {
+            } else if (current instanceof pro.sketchware.fragments.chat.ChatFragment) {
                 navigateToChatFragment();
             }
 
@@ -305,8 +298,6 @@ public class MainActivity extends BasePermissionAppCompatActivity {
     private Fragment getFragmentForNavId(int navItemId) {
         if (navItemId == R.id.item_projects) {
             return projectsFragment;
-        } else if (navItemId == R.id.item_sketchub) {
-            return projectsStoreFragment;
         } else if (navItemId == R.id.item_chat) {
             return chatFragment;
         }
@@ -329,6 +320,12 @@ public class MainActivity extends BasePermissionAppCompatActivity {
         FragmentTransaction transaction = fm.beginTransaction();
 
         binding.createNewProject.show();
+        binding.appbar.setVisibility(View.VISIBLE); // Show search bar for projects
+        // Restore scroll behavior for projects fragment
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) binding.container.getLayoutParams();
+        params.setBehavior(new AppBarLayout.ScrollingViewBehavior());
+        binding.container.setLayoutParams(params);
+        
         if (activeFragment != null) transaction.hide(activeFragment);
         if (fm.findFragmentByTag(PROJECTS_FRAGMENT_TAG) == null) {
             shouldShow = false;
@@ -341,38 +338,22 @@ public class MainActivity extends BasePermissionAppCompatActivity {
         currentNavItemId = R.id.item_projects;
     }
 
-    private void navigateToSketchubFragment() {
-        if (projectsStoreFragment == null) {
-            projectsStoreFragment = new ProjectsStoreFragment();
-        }
-
-        boolean shouldShow = true;
-        FragmentManager fm = getSupportFragmentManager();
-        FragmentTransaction transaction = fm.beginTransaction();
-
-        binding.createNewProject.hide();
-        if (activeFragment != null) transaction.hide(activeFragment);
-        if (fm.findFragmentByTag(PROJECTS_STORE_FRAGMENT_TAG) == null) {
-            shouldShow = false;
-            transaction.add(binding.container.getId(), projectsStoreFragment, PROJECTS_STORE_FRAGMENT_TAG);
-        }
-        if (shouldShow) transaction.show(projectsStoreFragment);
-        transaction.commit();
-
-        activeFragment = projectsStoreFragment;
-        currentNavItemId = R.id.item_sketchub;
-    }
-
     private void navigateToChatFragment() {
         if (chatFragment == null) {
-            chatFragment = new pro.sketchware.activities.chat.fragments.ChatFragment();
+            chatFragment = new pro.sketchware.fragments.chat.ChatFragment();
         }
 
         boolean shouldShow = true;
         FragmentManager fm = getSupportFragmentManager();
         FragmentTransaction transaction = fm.beginTransaction();
 
-        binding.createNewProject.hide();
+        binding.createNewProject.hide(); // Hide FAB for chat
+        binding.appbar.setVisibility(View.GONE); // Hide search bar for chat
+        // Remove scroll behavior for chat fragment
+        CoordinatorLayout.LayoutParams params = (CoordinatorLayout.LayoutParams) binding.container.getLayoutParams();
+        params.setBehavior(null);
+        binding.container.setLayoutParams(params);
+        
         if (activeFragment != null) transaction.hide(activeFragment);
         if (fm.findFragmentByTag(CHAT_FRAGMENT_TAG) == null) {
             shouldShow = false;

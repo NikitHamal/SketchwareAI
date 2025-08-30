@@ -37,6 +37,9 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import javax.crypto.Cipher;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -168,6 +171,144 @@ public class BackupFactory {
             return false;
         }
         return true;
+    }
+
+    private void parseManifest(File manifestFile, String sc_id) throws Exception {
+        ArrayList<String> permissions = new ArrayList<>();
+        ArrayList<String> services = new ArrayList<>();
+        ArrayList<String> receivers = new ArrayList<>();
+
+        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+        factory.setNamespaceAware(true);
+        XmlPullParser parser = factory.newPullParser();
+        parser.setInput(new FileInputStream(manifestFile), "UTF-8");
+
+        int eventType = parser.getEventType();
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            if (eventType == XmlPullParser.START_TAG) {
+                String tagName = parser.getName();
+                if (tagName.equals("uses-permission")) {
+                    for (int i = 0; i < parser.getAttributeCount(); i++) {
+                        if (parser.getAttributeName(i).equals("name")) {
+                            permissions.add(parser.getAttributeValue(i));
+                            break;
+                        }
+                    }
+                } else if (tagName.equals("service")) {
+                     for (int i = 0; i < parser.getAttributeCount(); i++) {
+                        if (parser.getAttributeName(i).equals("name")) {
+                            services.add(parser.getAttributeValue(i));
+                            break;
+                        }
+                    }
+                } else if (tagName.equals("receiver")) {
+                     for (int i = 0; i < parser.getAttributeCount(); i++) {
+                        if (parser.getAttributeName(i).equals("name")) {
+                            receivers.add(parser.getAttributeValue(i));
+                            break;
+                        }
+                    }
+                }
+            }
+            eventType = parser.next();
+        }
+
+        FileUtil.writeFile(new File(getPermissionsPath(sc_id)).getAbsolutePath(), new Gson().toJson(permissions));
+        FileUtil.writeFile(new File(getServicesPath(sc_id)).getAbsolutePath(), String.join("\n", services));
+        FileUtil.writeFile(new File(getReceiversPath(sc_id)).getAbsolutePath(), String.join("\n", receivers));
+    }
+
+    private String getAppNameFromManifest(File manifestFile) throws Exception {
+        String manifestContent = FileUtil.readFile(manifestFile.getAbsolutePath());
+        Pattern pattern = Pattern.compile("android:label=\"@string/([^\"]+)\"");
+        Matcher matcher = pattern.matcher(manifestContent);
+        if (matcher.find()) {
+            String appNameKey = matcher.group(1);
+            File stringsXml = new File(manifestFile.getParentFile(), "res/values/strings.xml");
+            if (stringsXml.exists()) {
+                String stringsContent = FileUtil.readFile(stringsXml.getAbsolutePath());
+                Pattern stringsPattern = Pattern.compile("<string name=\"" + appNameKey + "\">([^<]+)</string>");
+                Matcher stringsMatcher = stringsPattern.matcher(stringsContent);
+                if (stringsMatcher.find()) {
+                    return stringsMatcher.group(1);
+                }
+            }
+        } else {
+            pattern = Pattern.compile("android:label=\"([^\"]+)\"");
+            matcher = pattern.matcher(manifestContent);
+            if (matcher.find()) {
+                return matcher.group(1);
+            }
+        }
+        return "Imported Project";
+    }
+
+    private File getJavaFilesPath() {
+        return new File(getDataDir(), "files/java");
+    }
+
+    private File getResourcesPath() {
+        return new File(getDataDir(), "files/resource");
+    }
+
+    private File getAssetsPath() {
+        return new File(getDataDir(), "files/assets");
+    }
+
+    private File getNativeLibsPath() {
+        return new File(getDataDir(), "files/native_libs");
+    }
+
+    private String getPermissionsPath(String sc_id) {
+        return new File(Environment.getExternalStorageDirectory(), ".sketchware/data/" + sc_id + "/permission").getAbsolutePath();
+    }
+
+    private String getServicesPath(String sc_id) {
+        return new File(Environment.getExternalStorageDirectory(), ".sketchware/data/" + sc_id + "/files/service").getAbsolutePath();
+    }
+
+    private String getReceiversPath(String sc_id) {
+        return new File(Environment.getExternalStorageDirectory(), ".sketchware/data/" + sc_id + "/files/broadcast").getAbsolutePath();
+    }
+
+    private String getGradleValue(String gradleContent, String key) {
+        Pattern pattern = Pattern.compile(key + "\\s*=?\\s*\"([^\"]+)\"");
+        Matcher matcher = pattern.matcher(gradleContent);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        pattern = Pattern.compile(key + "\\s*=?\\s*'([^']+)'");
+        matcher = pattern.matcher(gradleContent);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        pattern = Pattern.compile(key + "\\s*=?\\s*([\\d\\.]+)");
+        matcher = pattern.matcher(gradleContent);
+        if (matcher.find()) {
+            return matcher.group(1);
+        }
+        return "";
+    }
+
+    private String getLocalLibraryPath(String sc_id) {
+        return new File(Environment.getExternalStorageDirectory(), ".sketchware/data/" + sc_id + "/local_library").getAbsolutePath();
+    }
+
+    private void parseDependencies(File buildGradle, String sc_id) throws Exception {
+        String gradleContent = FileUtil.readFile(buildGradle.getAbsolutePath());
+        ArrayList<HashMap<String, Object>> libraries = new ArrayList<>();
+
+        Pattern pattern = Pattern.compile("(api|implementation|compileOnly)\\s*['\"](.*?)['\"]");
+        Matcher matcher = pattern.matcher(gradleContent);
+
+        while (matcher.find()) {
+            String dependency = matcher.group(2);
+            HashMap<String, Object> library = new HashMap<>();
+            library.put("dependency", dependency);
+            libraries.add(library);
+        }
+
+        FileUtil.writeFile(getLocalLibraryPath(sc_id), new Gson().toJson(libraries));
     }
 
     public static void zipFolder(File srcFolder, File destZipFile) throws Exception {
@@ -456,6 +597,112 @@ public class BackupFactory {
         }
 
         restore(swbPath, name);
+    }
+
+    public void restoreFromZip(File zipFile) {
+        String name = zipFile.getName();
+        if (name.contains(".")) {
+            name = name.substring(0, name.lastIndexOf("."));
+        }
+
+        File outFolder = new File(getBackupDir(), name + "_unzipped");
+        if (outFolder.exists()) {
+            FileUtil.deleteFile(outFolder.getAbsolutePath());
+        }
+
+        Log.d("BackupFactory", "Unzipping " + zipFile.getName() + " to " + outFolder.getAbsolutePath());
+        if (!unzip(zipFile, outFolder)) {
+            error = "couldn't unzip the backup";
+            restoreSuccess = false;
+            return;
+        }
+
+        try {
+            Log.d("BackupFactory", "Starting project conversion from zip");
+            File appFolder = new File(outFolder, "app");
+            if (!appFolder.exists() || !appFolder.isDirectory()) {
+                File[] files = outFolder.listFiles();
+                if (files != null) {
+                    for (File file : files) {
+                        if (file.isDirectory()) {
+                            if (new File(file, "gradlew").exists()) {
+                                appFolder = new File(file, "app");
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            if (!appFolder.exists() || !appFolder.isDirectory()) {
+                throw new Exception("Unable to find 'app' folder in the unzipped project.");
+            }
+            Log.d("BackupFactory", "Found app folder at: " + appFolder.getAbsolutePath());
+
+            File buildGradle = new File(appFolder, "build.gradle");
+            if (!buildGradle.exists()) {
+                 buildGradle = new File(appFolder, "build.gradle.kts");
+                 if(!buildGradle.exists()) {
+                    throw new Exception("build.gradle or build.gradle.kts not found in app folder");
+                 }
+            }
+            Log.d("BackupFactory", "Found build.gradle at: " + buildGradle.getAbsolutePath());
+
+            String gradleContent = FileUtil.readFile(buildGradle.getAbsolutePath());
+            String packageName = getGradleValue(gradleContent, "applicationId");
+            String versionName = getGradleValue(gradleContent, "versionName");
+            String versionCode = getGradleValue(gradleContent, "versionCode");
+            Log.d("BackupFactory", "Parsed gradle values: " + packageName + ", " + versionName + ", " + versionCode);
+
+            File manifest = new File(appFolder, "src/main/AndroidManifest.xml");
+            if (!manifest.exists()) {
+                throw new Exception("AndroidManifest.xml not found");
+            }
+            String appName = getAppNameFromManifest(manifest);
+            Log.d("BackupFactory", "Parsed app name: " + appName);
+
+            HashMap<String, Object> projectMap = new HashMap<>();
+            projectMap.put("sc_id", sc_id);
+            projectMap.put("my_sc_pkg_name", packageName);
+            projectMap.put("sc_ver_name", versionName);
+            projectMap.put("sc_ver_code", versionCode);
+            projectMap.put("my_ws_name", appName);
+            projectMap.put("my_app_name", appName);
+            projectMap.put("sketchware_ver", 6);
+
+            File projectFileDir = getProjectPath().getParentFile();
+            if (projectFileDir != null && !projectFileDir.exists()) {
+                Log.d("BackupFactory", "Creating project directory: " + projectFileDir.getAbsolutePath());
+                projectFileDir.mkdirs();
+            }
+            File projectFile = new File(projectFileDir, "project");
+            Log.d("BackupFactory", "Writing project file to: " + projectFile.getAbsolutePath());
+            if (!writeEncrypted(projectFile, new Gson().toJson(projectMap))) {
+                throw new Exception("couldn't write to the project file");
+            }
+
+            Log.d("BackupFactory", "Copying source files");
+            copy(new File(appFolder, "src/main/java"), getJavaFilesPath());
+            copy(new File(appFolder, "src/main/res"), getResourcesPath());
+            copy(new File(appFolder, "src/main/assets"), getAssetsPath());
+            copy(new File(appFolder, "src/main/jniLibs"), getNativeLibsPath());
+
+            Log.d("BackupFactory", "Parsing AndroidManifest.xml for components");
+            parseManifest(manifest, sc_id);
+            Log.d("BackupFactory", "Parsing build.gradle for dependencies");
+            parseDependencies(buildGradle, sc_id);
+
+            restoreSuccess = true;
+            Log.d("BackupFactory", "Project conversion from zip successful");
+
+        } catch (Exception e) {
+            error = e.getMessage();
+            restoreSuccess = false;
+            Log.e("BackupFactory", "Error while restoring from zip", e);
+        } finally {
+            Log.d("BackupFactory", "Cleaning up temporary directory: " + outFolder.getAbsolutePath());
+            FileUtil.deleteFile(outFolder.getAbsolutePath());
+        }
     }
 
     private void restore(File swbPath, String name) {

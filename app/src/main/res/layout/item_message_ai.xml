@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:padding="8dp">
+
+    <!-- AI Message Container (full width) -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="start">
+
+        <!-- Message Content (Full width available) -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Model Name -->
+            <TextView
+                android:id="@+id/text_model_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="GPT-4"
+                android:textAppearance="@style/TextAppearance.Material3.LabelMedium"
+                android:textColor="?attr/colorOnSurfaceVariant"
+                android:layout_marginBottom="4dp"
+                tools:text="GPT-4" />
+
+            <!-- Thinking indicator row (hidden when not streaming) -->
+            <LinearLayout
+                android:id="@+id/layout_thinking"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:visibility="gone"
+                android:layout_marginBottom="4dp">
+
+                <TextView
+                    android:id="@+id/text_thinking"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Thinking…"
+                    android:textAppearance="@style/TextAppearance.Material3.BodySmall"
+                    android:textColor="?attr/colorOnSurfaceVariant" />
+            </LinearLayout>
+
+            <!-- Message Content Card -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="@android:color/transparent"
+                android:padding="0dp">
+
+                <!-- Message Text -->
+                <TextView
+                    android:id="@+id/text_message_content"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="To implement a RecyclerView in Android with proper adapter pattern, you'll need to follow these steps:\n\n1. Create your data model\n2. Design your item layout\n3. Create the adapter class\n4. Set up the RecyclerView in your activity\n\nHere's a complete example:\n\n```java\npublic class MyAdapter extends RecyclerView.Adapter&lt;MyAdapter.ViewHolder&gt; {\n    // Implementation here\n}\n```"
+                    android:textAppearance="@style/TextAppearance.Material3.BodyMedium"
+                    android:textColor="?attr/colorOnSurface"
+                    android:textIsSelectable="true"
+                    android:paddingVertical="4dp"
+                    tools:text="To implement a RecyclerView in Android, you need to create an adapter class that extends RecyclerView.Adapter..." />
+
+                <!-- Action Buttons Row -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="start|center_vertical"
+                    android:layout_marginTop="8dp">
+
+                    <!-- Copy Button -->
+                    <ImageView
+                        android:id="@+id/button_copy_message"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_marginEnd="8dp"
+                        android:padding="4dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Copy message"
+                        android:src="@drawable/ic_mtrl_copy"
+                        app:tint="?attr/colorOnSurfaceVariant" />
+
+                    <!-- Share Button -->
+                    <ImageView
+                        android:id="@+id/button_share_message"
+                        android:layout_width="28dp"
+                        android:layout_height="28dp"
+                        android:layout_marginEnd="8dp"
+                        android:padding="4dp"
+                        android:clickable="true"
+                        android:focusable="true"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:contentDescription="Share message"
+                        android:src="@drawable/ic_mtrl_share"
+                        app:tint="?attr/colorOnSurfaceVariant" />
+
+                    <!-- Spacer -->
+                    <View
+                        android:layout_width="0dp"
+                        android:layout_height="0dp"
+                        android:layout_weight="1" />
+
+                    <!-- Timestamp -->
+                    <TextView
+                        android:id="@+id/text_timestamp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="2:30 PM"
+                        android:textAppearance="@style/TextAppearance.Material3.LabelSmall"
+                        android:textColor="?attr/colorOnSurfaceVariant"
+                        tools:text="2:30 PM" />
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout>

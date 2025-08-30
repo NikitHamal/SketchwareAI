@@ -132,8 +132,8 @@ public class BackupRestoreManager {
     public void restore() {
         FilePickerOptions options = new FilePickerOptions();
         options.setMultipleSelection(true);
-        options.setExtensions(new String[]{BackupFactory.EXTENSION});
-        options.setTitle("Select backups to restore (" + BackupFactory.EXTENSION + ")");
+        options.setExtensions(new String[]{BackupFactory.EXTENSION, "zip"});
+        options.setTitle("Select backups to restore (" + BackupFactory.EXTENSION + ", zip)");
 
         FilePickerCallback callback = new FilePickerCallback() {
             @Override
@@ -141,20 +141,24 @@ public class BackupRestoreManager {
                 for (int i = 0; i < files.size(); i++) {
                     String backupFilePath = files.get(i).getAbsolutePath();
 
-                    if (BackupFactory.zipContainsFile(backupFilePath, "local_libs")) {
-                        boolean restoringMultipleBackups = files.size() > 1;
+                    if (backupFilePath.endsWith(".zip")) {
+                        new RestoreFromZipAsyncTask(new WeakReference<>(act), backupFilePath, projectsFragment).execute("");
+                    } else if (backupFilePath.endsWith("." + BackupFactory.EXTENSION)) {
+                        if (BackupFactory.zipContainsFile(backupFilePath, "local_libs")) {
+                            boolean restoringMultipleBackups = files.size() > 1;
 
-                        new MaterialAlertDialogBuilder(act)
-                                .setTitle("Warning")
-                                .setMessage(getRestoreIntegratedLocalLibrariesMessage(restoringMultipleBackups, i, files.size(),
-                                        FileUtil.getFileNameNoExtension(backupFilePath)))
-                                .setPositiveButton("Copy", (dialog, which) -> doRestore(backupFilePath, true))
-                                .setNegativeButton("Don't copy", (dialog, which) -> doRestore(backupFilePath, false))
-                                .setNeutralButton(R.string.common_word_cancel, null)
-                                .show();
+                            new MaterialAlertDialogBuilder(act)
+                                    .setTitle("Warning")
+                                    .setMessage(getRestoreIntegratedLocalLibrariesMessage(restoringMultipleBackups, i, files.size(),
+                                            FileUtil.getFileNameNoExtension(backupFilePath)))
+                                    .setPositiveButton("Copy", (dialog, which) -> doRestore(backupFilePath, true))
+                                    .setNegativeButton("Don't copy", (dialog, which) -> doRestore(backupFilePath, false))
+                                    .setNeutralButton(R.string.common_word_cancel, null)
+                                    .show();
 
-                    } else {
-                        doRestore(backupFilePath, false);
+                        } else {
+                            doRestore(backupFilePath, false);
+                        }
                     }
                 }
             }
@@ -165,6 +169,62 @@ public class BackupRestoreManager {
 
     public void doRestore(String file, boolean restoreLocalLibs) {
         new RestoreAsyncTask(new WeakReference<>(act), file, restoreLocalLibs, projectsFragment).execute("");
+    }
+
+    private static class RestoreFromZipAsyncTask extends AsyncTask<String, Integer, String> {
+
+        private final WeakReference<Activity> activityWeakReference;
+        private final String file;
+        private final ProjectsFragment projectsFragment;
+        private BackupFactory bm;
+        private AlertDialog dlg;
+        private boolean error = false;
+
+        RestoreFromZipAsyncTask(WeakReference<Activity> activityWeakReference, String file, ProjectsFragment projectsFragment) {
+            this.activityWeakReference = activityWeakReference;
+            this.file = file;
+            this.projectsFragment = projectsFragment;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            ProgressMsgBoxBinding loadingDialogBinding = ProgressMsgBoxBinding.inflate(LayoutInflater.from(activityWeakReference.get()));
+            loadingDialogBinding.tvProgress.setText("Importing from ZIP...");
+            dlg = new MaterialAlertDialogBuilder(activityWeakReference.get())
+                    .setTitle("Please wait")
+                    .setCancelable(false)
+                    .setView(loadingDialogBinding.getRoot())
+                    .create();
+            dlg.show();
+        }
+
+        @Override
+        protected String doInBackground(String... params) {
+            bm = new BackupFactory(BackupFactory.getNewScId());
+
+            try {
+                bm.restoreFromZip(new File(file));
+            } catch (Exception e) {
+                bm.error = e.getMessage();
+                error = true;
+            }
+
+            return "";
+        }
+
+        @Override
+        protected void onPostExecute(String _result) {
+            dlg.dismiss();
+
+            if (!bm.isRestoreSuccess() || error) {
+                SketchwareUtil.toastError("Couldn't import from ZIP: " + bm.error, Toast.LENGTH_LONG);
+            } else if (projectsFragment != null) {
+                projectsFragment.refreshProjectsList();
+                SketchwareUtil.toast("Imported successfully");
+            } else {
+                SketchwareUtil.toast("Imported successfully. Refresh to see the project", Toast.LENGTH_LONG);
+            }
+        }
     }
 
     private static class BackupAsyncTask extends AsyncTask<String, Integer, String> {

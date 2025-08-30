@@ -57,7 +57,6 @@ public class MainDrawer extends NavigationView {
         addHeaderView(headerView);
         inflateMenu(R.menu.main_drawer_menu);
         setNavigationItemSelectedListener(item -> {
-            initializeSocialLinks(item.getItemId());
             initializeDrawerItems(item.getItemId());
 
             // Return false to prevent selection
@@ -65,35 +64,9 @@ public class MainDrawer extends NavigationView {
         });
     }
 
-    private void initializeSocialLinks(@IdRes int id) {
-        if (!mB.a()) {
-            @StringRes int url = -1;
-            if (id == R.id.social_discord) {
-                url = R.string.link_discord_invite;
-            } else if (id == R.id.social_telegram) {
-                url = R.string.link_telegram_invite;
-            } else if (id == R.id.social_github) {
-                url = R.string.link_github_url;
-            }
-
-            if (url != -1) {
-                openUrl(getContext().getString(url));
-            }
-        }
-    }
-
     private void initializeDrawerItems(@IdRes int id) {
         Activity activity = unwrap(getContext());
-        if (id == R.id.about_team) {
-            Intent intent = new Intent(activity, AboutActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            activity.startActivity(intent);
-        } else if (id == R.id.changelog) {
-            Intent intent = new Intent(activity, AboutActivity.class);
-            intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            intent.putExtra("select", "changelog");
-            activity.startActivity(intent);
-        } else if (id == R.id.program_info) {
+        if (id == R.id.program_info) {
             Intent intent = new Intent(activity, ProgramInfoActivity.class);
             intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             activity.startActivityForResult(intent, 105);
@@ -106,12 +79,6 @@ public class MainDrawer extends NavigationView {
             intent.setFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
             activity.startActivity(intent);
         }
-    }
-
-    private void openUrl(String url) {
-        Activity activity = unwrap(getContext());
-        Intent intent = new Intent(Intent.ACTION_VIEW, Uri.parse(url));
-        activity.startActivity(intent);
     }
 
     private Activity unwrap(Context context) {

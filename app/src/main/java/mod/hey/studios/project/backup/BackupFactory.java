@@ -610,6 +610,7 @@ public class BackupFactory {
             FileUtil.deleteFile(outFolder.getAbsolutePath());
         }
 
+        Log.d("BackupFactory", "Unzipping " + zipFile.getName() + " to " + outFolder.getAbsolutePath());
         if (!unzip(zipFile, outFolder)) {
             error = "couldn't unzip the backup";
             restoreSuccess = false;
@@ -617,6 +618,7 @@ public class BackupFactory {
         }
 
         try {
+            Log.d("BackupFactory", "Starting project conversion from zip");
             File appFolder = new File(outFolder, "app");
             if (!appFolder.exists() || !appFolder.isDirectory()) {
                 File[] files = outFolder.listFiles();
@@ -635,6 +637,7 @@ public class BackupFactory {
             if (!appFolder.exists() || !appFolder.isDirectory()) {
                 throw new Exception("Unable to find 'app' folder in the unzipped project.");
             }
+            Log.d("BackupFactory", "Found app folder at: " + appFolder.getAbsolutePath());
 
             File buildGradle = new File(appFolder, "build.gradle");
             if (!buildGradle.exists()) {
@@ -643,17 +646,20 @@ public class BackupFactory {
                     throw new Exception("build.gradle or build.gradle.kts not found in app folder");
                  }
             }
+            Log.d("BackupFactory", "Found build.gradle at: " + buildGradle.getAbsolutePath());
 
             String gradleContent = FileUtil.readFile(buildGradle.getAbsolutePath());
             String packageName = getGradleValue(gradleContent, "applicationId");
             String versionName = getGradleValue(gradleContent, "versionName");
             String versionCode = getGradleValue(gradleContent, "versionCode");
+            Log.d("BackupFactory", "Parsed gradle values: " + packageName + ", " + versionName + ", " + versionCode);
 
             File manifest = new File(appFolder, "src/main/AndroidManifest.xml");
             if (!manifest.exists()) {
                 throw new Exception("AndroidManifest.xml not found");
             }
             String appName = getAppNameFromManifest(manifest);
+            Log.d("BackupFactory", "Parsed app name: " + appName);
 
             HashMap<String, Object> projectMap = new HashMap<>();
             projectMap.put("sc_id", sc_id);
@@ -664,26 +670,37 @@ public class BackupFactory {
             projectMap.put("my_app_name", appName);
             projectMap.put("sketchware_ver", 6);
 
-            File projectFile = new File(getProjectPath().getParentFile(), "project");
+            File projectFileDir = getProjectPath().getParentFile();
+            if (projectFileDir != null && !projectFileDir.exists()) {
+                Log.d("BackupFactory", "Creating project directory: " + projectFileDir.getAbsolutePath());
+                projectFileDir.mkdirs();
+            }
+            File projectFile = new File(projectFileDir, "project");
+            Log.d("BackupFactory", "Writing project file to: " + projectFile.getAbsolutePath());
             if (!writeEncrypted(projectFile, new Gson().toJson(projectMap))) {
                 throw new Exception("couldn't write to the project file");
             }
 
+            Log.d("BackupFactory", "Copying source files");
             copy(new File(appFolder, "src/main/java"), getJavaFilesPath());
             copy(new File(appFolder, "src/main/res"), getResourcesPath());
             copy(new File(appFolder, "src/main/assets"), getAssetsPath());
             copy(new File(appFolder, "src/main/jniLibs"), getNativeLibsPath());
 
+            Log.d("BackupFactory", "Parsing AndroidManifest.xml for components");
             parseManifest(manifest, sc_id);
+            Log.d("BackupFactory", "Parsing build.gradle for dependencies");
             parseDependencies(buildGradle, sc_id);
 
             restoreSuccess = true;
+            Log.d("BackupFactory", "Project conversion from zip successful");
 
         } catch (Exception e) {
             error = e.getMessage();
             restoreSuccess = false;
             Log.e("BackupFactory", "Error while restoring from zip", e);
         } finally {
+            Log.d("BackupFactory", "Cleaning up temporary directory: " + outFolder.getAbsolutePath());
             FileUtil.deleteFile(outFolder.getAbsolutePath());
         }
     }

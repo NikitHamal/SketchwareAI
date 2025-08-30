@@ -31,21 +31,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.Stack;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import javax.crypto.Cipher;
-
-import org.xmlpull.v1.XmlPullParser;
-import org.xmlpull.v1.XmlPullParserFactory;
-
-import com.besome.sketch.beans.ViewBean;
-import com.besome.sketch.beans.LayoutBean;
-import com.besome.sketch.beans.TextBean;
-import com.besome.sketch.beans.ImageBean;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
@@ -179,6 +170,125 @@ public class BackupFactory {
         return true;
     }
 
+    private void parseManifest(File manifestFile, String sc_id) throws Exception {
+        ArrayList<String> permissions = new ArrayList<>();
+        ArrayList<String> services = new ArrayList<>();
+        ArrayList<String> receivers = new ArrayList<>();
+
+        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
+        factory.setNamespaceAware(true);
+        XmlPullParser parser = factory.newPullParser();
+        parser.setInput(new FileInputStream(manifestFile), "UTF-8");
+
+        int eventType = parser.getEventType();
+        while (eventType != XmlPullParser.END_DOCUMENT) {
+            if (eventType == XmlPullParser.START_TAG) {
+                String tagName = parser.getName();
+                if (tagName.equals("uses-permission")) {
+                    for (int i = 0; i < parser.getAttributeCount(); i++) {
+                        if (parser.getAttributeName(i).equals("name")) {
+                            permissions.add(parser.getAttributeValue(i));
+                            break;
+                        }
+                    }
+                } else if (tagName.equals("service")) {
+                     for (int i = 0; i < parser.getAttributeCount(); i++) {
+                        if (parser.getAttributeName(i).equals("name")) {
+                            services.add(parser.getAttributeValue(i));
+                            break;
+                        }
+                    }
+                } else if (tagName.equals("receiver")) {
+                     for (int i = 0; i < parser.getAttributeCount(); i++) {
+                        if (parser.getAttributeName(i).equals("name")) {
+                            receivers.add(parser.getAttributeValue(i));
+                            break;
+                        }
+                    }
+                }
+            }
+            eventType = parser.next();
+        }
+
+        FileUtil.writeFile(new File(getPermissionsPath(sc_id)).getAbsolutePath(), new Gson().toJson(permissions));
+        FileUtil.writeFile(new File(getServicesPath(sc_id)).getAbsolutePath(), String.join("\n", services));
+        FileUtil.writeFile(new File(getReceiversPath(sc_id)).getAbsolutePath(), String.join("\n", receivers));
+    }
+
+    private String getAppNameFromManifest(File manifestFile) throws Exception {
+        String manifestContent = FileUtil.readFile(manifestFile.getAbsolutePath());
+        Pattern pattern = Pattern.compile("android:label=\"@string/([^\"]+)\"");
+        Matcher matcher = pattern.matcher(manifestContent);
+        if (matcher.find()) {
+            String appNameKey = matcher.group(1);
+            File stringsXml = new File(manifestFile.getParentFile(), "res/values/strings.xml");
+            if (stringsXml.exists()) {
+                String stringsContent = FileUtil.readFile(stringsXml.getAbsolutePath());
+                Pattern stringsPattern = Pattern.compile("<string name=\"" + appNameKey + "\">([^<]+)</string>");
+                Matcher stringsMatcher = stringsPattern.matcher(stringsContent);
+                if (stringsMatcher.find()) {
+                    return stringsMatcher.group(1);
+                }
+            }
+        } else {
+            pattern = Pattern.compile("android:label=\"([^\"]+)\"");
+            matcher = pattern.matcher(manifestContent);
+            if (matcher.find()) {
+                return matcher.group(1);
+            }
+        }
+        return "Imported Project";
+    }
+
+    private File getJavaFilesPath() {
+        return new File(getDataDir(), "files/java");
+    }
+
+    private File getResourcesPath() {
+        return new File(getDataDir(), "files/resource");
+    }
+
+    private File getAssetsPath() {
+        return new File(getDataDir(), "files/assets");
+    }
+
+    private File getNativeLibsPath() {
+        return new File(getDataDir(), "files/native_libs");
+    }
+
+    private String getPermissionsPath(String sc_id) {
+        return new File(Environment.getExternalStorageDirectory(), ".sketchware/data/" + sc_id + "/permission").getAbsolutePath();
+    }
+
+    private String getServicesPath(String sc_id) {
+        return new File(Environment.getExternalStorageDirectory(), ".sketchware/data/" + sc_id + "/files/service").getAbsolutePath();
+    }
+
+    private String getReceiversPath(String sc_id) {
+        return new File(Environment.getExternalStorageDirectory(), ".sketchware/data/" + sc_id + "/files/broadcast").getAbsolutePath();
+    }
+
+    private String getLocalLibraryPath(String sc_id) {
+        return new File(Environment.getExternalStorageDirectory(), ".sketchware/data/" + sc_id + "/local_library").getAbsolutePath();
+    }
+
+    private void parseDependencies(File buildGradle, String sc_id) throws Exception {
+        String gradleContent = FileUtil.readFile(buildGradle.getAbsolutePath());
+        ArrayList<HashMap<String, Object>> libraries = new ArrayList<>();
+
+        Pattern pattern = Pattern.compile("(api|implementation|compileOnly)\\s*['\"](.*?)['\"]");
+        Matcher matcher = pattern.matcher(gradleContent);
+
+        while (matcher.find()) {
+            String dependency = matcher.group(2);
+            HashMap<String, Object> library = new HashMap<>();
+            library.put("dependency", dependency);
+            libraries.add(library);
+        }
+
+        FileUtil.writeFile(getLocalLibraryPath(sc_id), new Gson().toJson(libraries));
+    }
+
     public static void zipFolder(File srcFolder, File destZipFile) throws Exception {
         try (FileOutputStream fileWriter = new FileOutputStream(destZipFile)) {
             try (ZipOutputStream zip = new ZipOutputStream(fileWriter)) {
@@ -186,65 +296,6 @@ public class BackupFactory {
                 zip.flush();
             }
         }
-    }
-
-    private ArrayList<ViewBean> parseLayout(File layoutFile) throws Exception {
-        ArrayList<ViewBean> viewBeans = new ArrayList<>();
-        Stack<ViewBean> stack = new Stack<>();
-        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-        factory.setNamespaceAware(true);
-        XmlPullParser parser = factory.newPullParser();
-        parser.setInput(new FileInputStream(layoutFile), "UTF-8");
-
-        int eventType = parser.getEventType();
-        while (eventType != XmlPullParser.END_DOCUMENT) {
-            if (eventType == XmlPullParser.START_TAG) {
-                ViewBean viewBean = new ViewBean();
-                String tagName = parser.getName();
-                viewBean.type = ViewBean.getViewTypeByTypeName(tagName);
-
-                for (int i = 0; i < parser.getAttributeCount(); i++) {
-                    String attrName = parser.getAttributeName(i);
-                    String attrValue = parser.getAttributeValue(i);
-
-                    if (attrName.equals("id")) {
-                        viewBean.id = attrValue.replace("@+id/", "");
-                    } else if (attrName.equals("layout_width")) {
-                        if (attrValue.equals("match_parent")) {
-                            viewBean.layout.width = -1;
-                        } else if (attrValue.equals("wrap_content")) {
-                            viewBean.layout.width = -2;
-                        } else {
-                            viewBean.layout.width = Integer.parseInt(attrValue.replace("dp", ""));
-                        }
-                    } else if (attrName.equals("layout_height")) {
-                        if (attrValue.equals("match_parent")) {
-                            viewBean.layout.height = -1;
-                        } else if (attrValue.equals("wrap_content")) {
-                            viewBean.layout.height = -2;
-                        } else {
-                            viewBean.layout.height = Integer.parseInt(attrValue.replace("dp", ""));
-                        }
-                    } else if (attrName.equals("text")) {
-                        viewBean.text.text = attrValue;
-                    }
-                }
-
-                if (!stack.isEmpty()) {
-                    viewBean.parent = stack.peek().id;
-                }
-
-                viewBeans.add(viewBean);
-                stack.push(viewBean);
-
-            } else if (eventType == XmlPullParser.END_TAG) {
-                if(!stack.isEmpty()){
-                    stack.pop();
-                }
-            }
-            eventType = parser.next();
-        }
-        return viewBeans;
     }
 
     private static void addFileToZip(File rootPath, File srcFile, ZipOutputStream zip) throws Exception {
@@ -544,10 +595,8 @@ public class BackupFactory {
         }
 
         try {
-            // Now, let's try to convert the unzipped project to Sketchware format
             File appFolder = new File(outFolder, "app");
             if (!appFolder.exists() || !appFolder.isDirectory()) {
-                // Look for a folder that contains gradlew, which is probably the project's root
                 File[] files = outFolder.listFiles();
                 if (files != null) {
                     for (File file : files) {
@@ -562,7 +611,7 @@ public class BackupFactory {
             }
 
             if (!appFolder.exists() || !appFolder.isDirectory()) {
-                throw new Exception("Unable to find 'app' folder in the unzipped project. Please make sure the zip file is a valid Android Studio project.");
+                throw new Exception("Unable to find 'app' folder in the unzipped project.");
             }
 
             File buildGradle = new File(appFolder, "build.gradle");
@@ -574,177 +623,46 @@ public class BackupFactory {
             }
 
             String gradleContent = FileUtil.readFile(buildGradle.getAbsolutePath());
-
             String packageName = getGradleValue(gradleContent, "applicationId");
             String versionName = getGradleValue(gradleContent, "versionName");
             String versionCode = getGradleValue(gradleContent, "versionCode");
-            String appName = "";
 
             File manifest = new File(appFolder, "src/main/AndroidManifest.xml");
             if (!manifest.exists()) {
                 throw new Exception("AndroidManifest.xml not found");
             }
-            String manifestContent = FileUtil.readFile(manifest.getAbsolutePath());
-            Pattern pattern = Pattern.compile("android:label=\"@string/([^\"]+)\"");
-            Matcher matcher = pattern.matcher(manifestContent);
-            if (matcher.find()) {
-                String appNameKey = matcher.group(1);
-                File stringsXml = new File(appFolder, "src/main/res/values/strings.xml");
-                if (stringsXml.exists()) {
-                    String stringsContent = FileUtil.readFile(stringsXml.getAbsolutePath());
-                    Pattern stringsPattern = Pattern.compile("<string name=\"" + appNameKey + "\">([^<]+)</string>");
-                    Matcher stringsMatcher = stringsPattern.matcher(stringsContent);
-                    if (stringsMatcher.find()) {
-                        appName = stringsMatcher.group(1);
-                    }
-                }
-            } else {
-                 pattern = Pattern.compile("android:label=\"([^\"]+)\"");
-                 matcher = pattern.matcher(manifestContent);
-                 if(matcher.find()) {
-                    appName = matcher.group(1);
-                 }
-            }
+            String appName = getAppNameFromManifest(manifest);
 
-            if (appName.isEmpty()) {
-                appName = "Imported Project";
-            }
-
-
-            // Now we have the metadata, let's create the project file
             HashMap<String, Object> projectMap = new HashMap<>();
             projectMap.put("sc_id", sc_id);
             projectMap.put("my_sc_pkg_name", packageName);
             projectMap.put("sc_ver_name", versionName);
             projectMap.put("sc_ver_code", versionCode);
             projectMap.put("my_ws_name", appName);
-            // Add other necessary fields with default values
             projectMap.put("my_app_name", appName);
             projectMap.put("sketchware_ver", 6);
 
-
-            File projectFile = new File(outFolder, "project");
+            File projectFile = new File(getProjectPath().getParentFile(), "project");
             if (!writeEncrypted(projectFile, new Gson().toJson(projectMap))) {
                 throw new Exception("couldn't write to the project file");
             }
 
-            // Next, create the data and resources directories
-            File dataDir = new File(outFolder, "data");
-            File resourcesDir = new File(outFolder, "resources");
-            dataDir.mkdirs();
-            resourcesDir.mkdirs();
+            copy(new File(appFolder, "src/main/java"), getJavaFilesPath());
+            copy(new File(appFolder, "src/main/res"), getResourcesPath());
+            copy(new File(appFolder, "src/main/assets"), getAssetsPath());
+            copy(new File(appFolder, "src/main/jniLibs"), getNativeLibsPath());
 
-            File logicDir = new File(dataDir, "logic");
-            logicDir.mkdirs();
-            File javaDir = new File(appFolder, "src/main/java");
-            if (javaDir.exists()) {
-                ArrayList<File> javaFiles = new ArrayList<>();
-                findJavaFiles(javaDir, javaFiles);
+            parseManifest(manifest, sc_id);
+            parseDependencies(buildGradle, sc_id);
 
-                for (File javaFile : javaFiles) {
-                    HashMap<String, ArrayList<BlockBean>> logic = parseJavaFileForLogic(javaFile);
-                    String json = new Gson().toJson(logic);
-                    FileUtil.writeFile(new File(logicDir, javaFile.getName()).getAbsolutePath(), json);
-                }
-            }
-
-            //FileUtil.writeFile(new File(dataDir, "view").getAbsolutePath(), "[]");
-            FileUtil.writeFile(new File(dataDir, "library").getAbsolutePath(), "[]");
-            FileUtil.writeFile(new File(dataDir, "resource").getAbsolutePath(), "[]");
-            //FileUtil.writeFile(new File(dataDir, "component").getAbsolutePath(), "[]");
-            FileUtil.writeFile(new File(dataDir, "file").getAbsolutePath(), "");
-
-            File componentDir = new File(dataDir, "component");
-            componentDir.mkdirs();
-            ArrayList<ComponentBean> components = parseManifest(manifest);
-            String json = new Gson().toJson(components);
-            FileUtil.writeFile(new File(componentDir, projectFile.getJavaName()).getAbsolutePath(), json);
-
-
-            // Copy resources
-            for (String subfolder : resSubfolders) {
-                File resSubf = new File(resourcesDir, subfolder);
-                resSubf.mkdirs();
-                if (!subfolder.equals("icons")) {
-                    createNomediaFileIn(resSubf);
-                }
-            }
-
-            File asResDir = new File(appFolder, "src/main/res");
-            if (asResDir.exists()) {
-                copyResources(asResDir, resourcesDir);
-            }
-
-            File layoutDir = new File(asResDir, "layout");
-            if (layoutDir.exists()) {
-                File[] layoutFiles = layoutDir.listFiles();
-                if (layoutFiles != null) {
-                    for (File layoutFile : layoutFiles) {
-                        if (layoutFile.getName().endsWith(".xml")) {
-                            ArrayList<ViewBean> viewBeans = parseLayout(layoutFile);
-                            String json = new Gson().toJson(viewBeans);
-                            FileUtil.writeFile(new File(dataDir, "view/" + layoutFile.getName()).getAbsolutePath(), json);
-                        }
-                    }
-                }
-            }
-
-
-            // Finally, copy the generated files to the actual sketchware directories
-            copy(dataDir, getDataDir());
-            for (String subfolder : resSubfolders) {
-                File subf = new File(resourcesDir, subfolder);
-                copySafe(subf, getResDir(subfolder));
-            }
-            getProjectPath().getParentFile().mkdirs();
-            copy(projectFile, getProjectPath());
-
+            restoreSuccess = true;
 
         } catch (Exception e) {
             error = e.getMessage();
             restoreSuccess = false;
             Log.e("BackupFactory", "Error while restoring from zip", e);
         } finally {
-            // Clean up the temporary directory
             FileUtil.deleteFile(outFolder.getAbsolutePath());
-        }
-    }
-
-    private String getGradleValue(String gradleContent, String key) {
-        Pattern pattern = Pattern.compile(key + "\\s*=?\\s*\"([^\"]+)\"");
-        Matcher matcher = pattern.matcher(gradleContent);
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-        pattern = Pattern.compile(key + "\\s*=?\\s*'([^']+)'");
-        matcher = pattern.matcher(gradleContent);
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-        pattern = Pattern.compile(key + "\\s*=?\\s*([\\d\\.]+)");
-        matcher = pattern.matcher(gradleContent);
-        if (matcher.find()) {
-            return matcher.group(1);
-        }
-        return "";
-    }
-
-    private void copyResources(File source, File destination) {
-        File[] files = source.listFiles();
-        if (files == null) return;
-
-        for (File file : files) {
-            if (file.isDirectory()) {
-                if (file.getName().startsWith("drawable") || file.getName().startsWith("mipmap")) {
-                    copy(file, new File(destination, "images"));
-                } else if (file.getName().equals("raw")) {
-                    copy(file, new File(destination, "sounds"));
-                } else if (file.getName().equals("font")) {
-                    copy(file, new File(destination, "fonts"));
-                } else {
-                    copyResources(file, destination);
-                }
-            }
         }
     }
 
@@ -870,82 +788,5 @@ public class BackupFactory {
     private File getLocalLibsPath() {
         return new File(Environment.getExternalStorageDirectory(),
                 ".sketchware/data/" + sc_id + "/local_library");
-    }
-
-    private void findJavaFiles(File dir, ArrayList<File> javaFiles) {
-        File[] files = dir.listFiles();
-        if (files != null) {
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    findJavaFiles(file, javaFiles);
-                } else if (file.getName().endsWith(".java")) {
-                    javaFiles.add(file);
-                }
-            }
-        }
-    }
-
-    private HashMap<String, ArrayList<BlockBean>> parseJavaFileForLogic(File javaFile) {
-        HashMap<String, ArrayList<BlockBean>> logic = new HashMap<>();
-        String content = FileUtil.readFile(javaFile.getAbsolutePath());
-
-        Pattern pattern = Pattern.compile("(\\w+)\\.setOnClickListener\\(new View\\.OnClickListener\\(\\) \\{\\s*@Override\\s*public void onClick\\(View _view\\) \\{([\\s\\S]*?)\\}\s*\\}\\);");
-        Matcher matcher = pattern.matcher(content);
-
-        while (matcher.find()) {
-            String viewId = matcher.group(1);
-            String onClickCode = matcher.group(2);
-
-            ArrayList<BlockBean> blocks = new ArrayList<>();
-
-            Pattern toastPattern = Pattern.compile("Toast\\.makeText\\(.*?\"(.*?)\".*?\\)\\.show\\(\\);");
-            Matcher toastMatcher = toastPattern.matcher(onClickCode);
-
-            if (toastMatcher.find()) {
-                String toastText = toastMatcher.group(1);
-                BlockBean block = new BlockBean();
-                block.id = "toast";
-                block.spec = "Toast.makeText(%s, %s, %d).show()";
-                block.type = "v";
-                block.typeName = "component";
-                block.opCode = "componentToast";
-                block.parameters.add("");
-                block.parameters.add("\"" + toastText + "\"");
-                block.parameters.add("0");
-                blocks.add(block);
-            }
-
-            logic.put(viewId + "_onClick", blocks);
-        }
-
-        return logic;
-    }
-
-    private ArrayList<ComponentBean> parseManifest(File manifestFile) throws Exception {
-        ArrayList<ComponentBean> components = new ArrayList<>();
-        XmlPullParserFactory factory = XmlPullParserFactory.newInstance();
-        factory.setNamespaceAware(true);
-        XmlPullParser parser = factory.newPullParser();
-        parser.setInput(new FileInputStream(manifestFile), "UTF-8");
-
-        int eventType = parser.getEventType();
-        while (eventType != XmlPullParser.END_DOCUMENT) {
-            if (eventType == XmlPullParser.START_TAG) {
-                String tagName = parser.getName();
-                if (tagName.equals("service") || tagName.equals("receiver")) {
-                    ComponentBean component = new ComponentBean(0);
-                    component.type = tagName.equals("service") ? ComponentBean.COMPONENT_TYPE_SERVICE : ComponentBean.COMPONENT_TYPE_RECEIVER;
-                    for (int i = 0; i < parser.getAttributeCount(); i++) {
-                        if (parser.getAttributeName(i).equals("name")) {
-                            component.componentId = parser.getAttributeValue(i);
-                            break;
-                        }
-                    }
-                    components.add(component);
-                }
-            }
-            eventType = parser.next();
-        }
-        return components;
     }
 }

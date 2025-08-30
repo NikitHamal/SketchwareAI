@@ -200,7 +200,7 @@ public class BackupRestoreManager {
 
         @Override
         protected String doInBackground(String... params) {
-            bm = new BackupFactory(lC.b());
+            bm = new BackupFactory(BackupFactory.getNewScId());
 
             try {
                 bm.restoreFromZip(new File(file));

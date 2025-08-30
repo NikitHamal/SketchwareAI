@@ -57,8 +57,6 @@ public class ComponentBean extends CollapsibleBean implements Parcelable {
     public static final int COMPONENT_TYPE_ONESIGNAL = 32;
     public static final int COMPONENT_TYPE_FACEBOOK_ADS_BANNER = 33;
     public static final int COMPONENT_TYPE_FACEBOOK_ADS_INTERSTITIAL = 34;
-    public static final int COMPONENT_TYPE_SERVICE = 35;
-    public static final int COMPONENT_TYPE_RECEIVER = 36;
 
     public Gx classInfo;
     @Expose
@@ -197,16 +195,12 @@ public class ComponentBean extends CollapsibleBean implements Parcelable {
             case COMPONENT_TYPE_ONESIGNAL -> "OneSignal";
             case COMPONENT_TYPE_FACEBOOK_ADS_BANNER -> "Facebook Ads Banner";
             case COMPONENT_TYPE_FACEBOOK_ADS_INTERSTITIAL -> "Facebook Ads Interstitial";
-            case COMPONENT_TYPE_SERVICE -> "Service";
-            case COMPONENT_TYPE_RECEIVER -> "BroadcastReceiver";
             default -> ComponentsHandler.name(type);
         };
     }
 
     public static int getComponentTypeByTypeName(String typeName) {
         return switch (typeName) {
-            case "Service" -> COMPONENT_TYPE_SERVICE;
-            case "BroadcastReceiver" -> COMPONENT_TYPE_RECEIVER;
             case "Intent" -> COMPONENT_TYPE_INTENT;
             case "File" -> COMPONENT_TYPE_SHAREDPREF;
             case "Calendar" -> COMPONENT_TYPE_CALENDAR;
@@ -281,8 +275,6 @@ public class ComponentBean extends CollapsibleBean implements Parcelable {
             case COMPONENT_TYPE_ONESIGNAL -> "OneSignal";
             case COMPONENT_TYPE_FACEBOOK_ADS_BANNER -> "FBAdsBanner";
             case COMPONENT_TYPE_FACEBOOK_ADS_INTERSTITIAL -> "FBAdsInterstitial";
-            case COMPONENT_TYPE_SERVICE -> "Service";
-            case COMPONENT_TYPE_RECEIVER -> "BroadcastReceiver";
             default -> ComponentsHandler.typeName(type);
         };
     }
@@ -293,8 +285,6 @@ public class ComponentBean extends CollapsibleBean implements Parcelable {
 
     public static int getDescStrResource(int type) {
         return switch (type) {
-            case COMPONENT_TYPE_SERVICE -> 0;
-            case COMPONENT_TYPE_RECEIVER -> 0;
             case COMPONENT_TYPE_INTENT -> R.string.component_description_intent;
             case COMPONENT_TYPE_SHAREDPREF -> R.string.component_description_file;
             case COMPONENT_TYPE_CALENDAR -> R.string.component_description_calendar;
@@ -376,8 +366,6 @@ public class ComponentBean extends CollapsibleBean implements Parcelable {
             case 36 -> R.drawable.ic_mtrl_sync;
             case COMPONENT_TYPE_FACEBOOK_ADS_BANNER -> R.drawable.ic_mtrl_fbads_banner;
             case COMPONENT_TYPE_FACEBOOK_ADS_INTERSTITIAL -> R.drawable.ic_mtrl_fbads_banner;
-            case COMPONENT_TYPE_SERVICE -> R.drawable.ic_mtrl_settings_applications;
-            case COMPONENT_TYPE_RECEIVER -> R.drawable.ic_mtrl_settings_input;
 
             default -> ComponentsHandler.icon(type);
         };

@@ -37,18 +37,36 @@ import java.util.zip.ZipInputStream;
 import java.util.zip.ZipOutputStream;
 
 import javax.crypto.Cipher;
+
+import org.xmlpull.v1.XmlPullParser;
+import org.xmlpull.v1.XmlPullParserException;
+import org.xmlpull.v1.XmlPullParserFactory;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
+import com.besome.sketch.beans.ProjectLibraryBean;
+
+import java.util.HashMap;
+
+import a.a.a.iC;
+import a.a.a.jC;
 import a.a.a.lC;
 import a.a.a.yB;
 import mod.hey.studios.editor.manage.block.ExtraBlockInfo;
 import mod.hey.studios.editor.manage.block.v2.BlockLoader;
 import mod.hey.studios.project.custom_blocks.CustomBlocksManager;
+import mod.hey.studios.project.importer.AndroidProjectImporter;
+import mod.hey.studios.build.BuildSettings;
 import mod.hey.studios.util.Helper;
 import mod.hilal.saif.activities.tools.ConfigActivity;
+import dev.aldi.sayuti.editor.manage.LocalLibrariesUtil;
+import mod.pranav.dependency.resolver.DependencyResolver;
+import org.cosmic.ide.dependency.resolver.api.Artifact;
 import pro.sketchware.utility.FileUtil;
 import pro.sketchware.utility.SketchwareUtil;
+import androidx.annotation.NonNull;
+import java.util.concurrent.CountDownLatch;
+import java.util.stream.Collectors;
 
 public class BackupFactory {
     public static final String EXTENSION = "swb";
@@ -74,12 +92,12 @@ public class BackupFactory {
     }
 
     public static String getBackupDir() {
-        return new File(Environment.getExternalStorageDirectory(), ConfigActivity.getBackupPath())
+        return new File(FileUtil.getExternalStorageDir(), ConfigActivity.getBackupPath())
                 .getAbsolutePath();
     }
 
     private static File getAllLocalLibsDir() {
-        return new File(Environment.getExternalStorageDirectory(),
+        return new File(FileUtil.getExternalStorageDir(),
                 ".sketchware/libs/local_libs");
     }
 
@@ -122,7 +140,7 @@ public class BackupFactory {
     }
 
     public static String getNewScId() {
-        File myscList = new File(Environment.getExternalStorageDirectory(),
+        File myscList = new File(FileUtil.getExternalStorageDir(),
                 ".sketchware/mysc/list/");
 
         ArrayList<String> list = new ArrayList<>();
@@ -169,6 +187,7 @@ public class BackupFactory {
         }
         return true;
     }
+
 
     public static void zipFolder(File srcFolder, File destZipFile) throws Exception {
         try (FileOutputStream fileWriter = new FileOutputStream(destZipFile)) {
@@ -458,6 +477,11 @@ public class BackupFactory {
         restore(swbPath, name);
     }
 
+    public void restoreFromZip(File zipFile, Context context, AndroidProjectImporter.ProgressCallback callback) throws Exception {
+        AndroidProjectImporter importer = new AndroidProjectImporter(context, sc_id, callback);
+        importer.importProject(zipFile);
+    }
+
     private void restore(File swbPath, String name) {
 
         createBackupsFolder();
@@ -563,22 +587,22 @@ public class BackupFactory {
     }
 
     private File getDataDir() {
-        return new File(Environment.getExternalStorageDirectory(),
+        return new File(FileUtil.getExternalStorageDir(),
                 ".sketchware/data/" + sc_id);
     }
 
     private File getResDir(String subfolder) {
-        return new File(Environment.getExternalStorageDirectory(),
+        return new File(FileUtil.getExternalStorageDir(),
                 ".sketchware/resources/" + subfolder + "/" + sc_id);
     }
 
     private File getProjectPath() {
-        return new File(Environment.getExternalStorageDirectory(),
+        return new File(FileUtil.getExternalStorageDir(),
                 ".sketchware/mysc/list/" + sc_id + "/project");
     }
 
     private File getLocalLibsPath() {
-        return new File(Environment.getExternalStorageDirectory(),
+        return new File(FileUtil.getExternalStorageDir(),
                 ".sketchware/data/" + sc_id + "/local_library");
     }
 }

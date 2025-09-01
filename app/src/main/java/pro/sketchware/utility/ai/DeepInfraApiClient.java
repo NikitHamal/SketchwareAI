@@ -267,7 +267,12 @@ public class DeepInfraApiClient implements ApiClient {
                 if (m.has("deprecated") && !m.get("deprecated").isJsonNull()) continue;
 
                 // Skip private models (private: 1)
-                if (m.has("private") && m.get("private").getAsInt() == 1) continue;
+                try {
+                    if (m.has("private") && m.get("private").getAsInt() == 1) continue;
+                } catch (Exception ex) {
+                    // If 'private' field is malformed, skip this model
+                    continue;
+                }
 
                 String id = m.has("model_name") ? m.get("model_name").getAsString() : null;
                 if (id == null || id.isEmpty()) continue;

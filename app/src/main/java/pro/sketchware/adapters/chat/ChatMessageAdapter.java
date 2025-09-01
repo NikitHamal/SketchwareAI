@@ -22,6 +22,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     
     private List<ChatMessage> messages;
     private final OnMessageActionListener listener;
+    private Markwon markwon;
     private final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm", Locale.getDefault());
     
     public interface OnMessageActionListener {
@@ -47,6 +48,9 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        if (markwon == null) {
+            markwon = Markwon.create(parent.getContext());
+        }
         LayoutInflater inflater = LayoutInflater.from(parent.getContext());
         
         if (viewType == VIEW_TYPE_USER) {
@@ -101,7 +105,7 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
         public void bind(ChatMessage message) {
-            binding.textMessageContent.setText(message.getContent());
+            markwon.setMarkdown(binding.textMessageContent, message.getContent());
             binding.textTimestamp.setText(timeFormat.format(new Date(message.getTimestamp())));
         }
     }
@@ -115,11 +119,11 @@ public class ChatMessageAdapter extends RecyclerView.Adapter<RecyclerView.ViewHo
         }
 
         public void updateContent(String content) {
-            binding.textMessageContent.setText(content);
+            markwon.setMarkdown(binding.textMessageContent, content);
         }
 
         public void bind(ChatMessage message) {
-            binding.textMessageContent.setText(message.getContent());
+            markwon.setMarkdown(binding.textMessageContent, message.getContent());
             binding.textTimestamp.setText(timeFormat.format(new Date(message.getTimestamp())));
 
             // Format model name to remove provider prefix if present

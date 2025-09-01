@@ -8,11 +8,12 @@
     android:padding="8dp"
     android:gravity="end">
 
+    <!-- Use ConstraintLayout so bubble can wrap but not exceed 80% width -->
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
-        <!-- 20% start guideline -->
+        <!-- 20% start guideline to cap bubble width to remaining 80% -->
         <androidx.constraintlayout.widget.Guideline
             android:id="@+id/guidelinestart20"
             android:layout_width="wrap_content"
@@ -20,6 +21,7 @@
             android:orientation="vertical"
             app:layout_constraintGuide_percent="0.2" />
 
+        <!-- Message Content (wrap, capped by guideline) -->
         <com.google.android.material.card.MaterialCardView
             android:id="@+id/cardusermessage"
             android:layout_width="wrap_content"
@@ -39,8 +41,9 @@
                 android:orientation="vertical"
                 android:padding="12dp">
 
+                <!-- Message Text -->
                 <TextView
-                    android:id="@+id/textmessagecontent"
+                    android:id="@+id/textMessageContent"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="How can I implement a RecyclerView in Android with proper adapter pattern?"
@@ -49,6 +52,7 @@
                     android:textIsSelectable="true"
                     tools:text="How can I implement a RecyclerView in Android with proper adapter pattern?" />
 
+                <!-- Timestamp -->
                 <TextView
                     android:id="@+id/text_timestamp"
                     android:layout_width="wrap_content"

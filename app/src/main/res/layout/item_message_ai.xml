@@ -87,7 +87,7 @@
                         android:padding="4dp"
                         android:clickable="true"
                         android:focusable="true"
-                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:background="@android:color/transparent"
                         android:contentDescription="Copy message"
                         android:src="@drawable/ic_mtrl_copy"
                         app:tint="?attr/colorOnSurfaceVariant" />
@@ -101,7 +101,7 @@
                         android:padding="4dp"
                         android:clickable="true"
                         android:focusable="true"
-                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:background="@android:color/transparent"
                         android:contentDescription="Share message"
                         android:src="@drawable/ic_mtrl_share"
                         app:tint="?attr/colorOnSurfaceVariant" />

@@ -10,7 +10,7 @@
 
     <!-- Use ConstraintLayout row so bubble can wrap but not exceed 80% width -->
     <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
         <!-- 20% start guideline to cap bubble width to remaining 80% -->

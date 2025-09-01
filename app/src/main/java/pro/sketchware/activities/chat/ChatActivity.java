@@ -13,6 +13,8 @@ import android.widget.RadioGroup;
 
 import androidx.recyclerview.widget.LinearLayoutManager;
 
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowInsetsCompat;
 import com.besome.sketch.lib.base.BaseAppCompatActivity;
 import com.google.android.material.bottomsheet.BottomSheetDialog;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -93,6 +95,17 @@ public class ChatActivity extends BaseAppCompatActivity {
         } catch (Exception e) {
             // Fallback for older versions
         }
+
+        // Handle keyboard insets to prevent overlap
+        ViewCompat.setOnApplyWindowInsetsListener(binding.mainContentContainer, (v, insets) -> {
+            int imeHeight = insets.getInsets(WindowInsetsCompat.Type.ime()).bottom;
+            int systemBarsHeight = insets.getInsets(WindowInsetsCompat.Type.systemBars()).bottom;
+
+            // Apply padding to the container to push content up
+            v.setPadding(v.getPaddingLeft(), v.getPaddingTop(), v.getPaddingRight(), Math.max(imeHeight, systemBarsHeight));
+
+            return insets;
+        });
     }
     
     private void setupToolbar() {

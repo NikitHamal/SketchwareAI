@@ -11,6 +11,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import io.noties.markwon.Markwon;
 import pro.sketchware.databinding.ItemMessageAiBinding;
 import pro.sketchware.databinding.ItemMessageUserBinding;
 import pro.sketchware.models.chat.ChatMessage;

@@ -779,6 +779,10 @@ public class Ox {
                 nx.addAttribute("android", "textColor", formatColor(viewBean.text.textColor & 0xffffff));
             }
         }
+        String textFont = viewBean.text.textFont;
+        if (textFont != null && !textFont.isEmpty() && !textFont.equals("none") && !toNotAdd.contains("android:fontFamily") && !injectHandler.contains("fontFamily")) {
+            nx.addAttribute("android", "fontFamily", "@font/" + textFont);
+        }
         switch (viewBean.type) {
             case ViewBean.VIEW_TYPE_WIDGET_EDITTEXT:
             case ViewBeans.VIEW_TYPE_WIDGET_AUTOCOMPLETETEXTVIEW:

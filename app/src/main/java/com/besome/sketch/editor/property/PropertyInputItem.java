@@ -57,6 +57,7 @@ import a.a.a.mB;
 import a.a.a.uq;
 import a.a.a.wB;
 import a.a.a.yB;
+import android.app.Activity;
 import mod.hey.studios.util.Helper;
 import pro.sketchware.R;
 import pro.sketchware.activities.resourceseditor.components.utils.StringsEditorManager;
@@ -68,6 +69,7 @@ import pro.sketchware.lib.highlighter.SyntaxScheme;
 import pro.sketchware.lib.validator.MinMaxInputValidator;
 import pro.sketchware.lib.validator.PropertyNameValidator;
 import pro.sketchware.utility.FileUtil;
+import pro.sketchware.utility.UI;
 
 @SuppressLint("ViewConstructor")
 public class PropertyInputItem extends RelativeLayout implements View.OnClickListener {
@@ -351,6 +353,9 @@ public class PropertyInputItem extends RelativeLayout implements View.OnClickLis
                     textAutoCompleteInput.setError(errorMessage);
                 } else {
                     valueChangeListener.a(key, value);
+                    if (getContext() instanceof Activity) {
+                        UI.hideKeyboard((Activity) getContext());
+                    }
                     dialog.dismiss();
                 }
             }
@@ -618,6 +623,11 @@ public class PropertyInputItem extends RelativeLayout implements View.OnClickLis
                     attrs.add("app:strokeColor");
                     attrs.add("app:strokeWidth");
                 }
+            }
+            if (classInfo.a("TextView")) {
+                attrs.add("android:lineSpacingExtra");
+                attrs.add("android:lineSpacingMultiplier");
+                attrs.add("android:letterSpacing");
             }
         }
         // Add more attributes here based on the view type

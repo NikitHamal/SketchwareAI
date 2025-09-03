@@ -627,6 +627,7 @@ public class ViewPropertyItems extends LinearLayout implements Kw, View.OnClickL
             a(bean, "property_text");
             a(bean, "property_text_size");
             a(bean, "property_text_style");
+            j("property_text_font", bean.text.textFont);
             a(bean, "property_text_color");
             if (classInfo.b("EditText")) {
                 a(bean, "property_hint");
@@ -818,6 +819,10 @@ public class ViewPropertyItems extends LinearLayout implements Kw, View.OnClickL
                 if (vw.getKey().equals("property_text_font")) {
                     bean.text.textFont = vw.getValue();
                 }
+                } else if (view instanceof PropertyFontItem) {
+                    if (((PropertyFontItem) view).getKey().equals("property_text_font")) {
+                        bean.text.textFont = ((PropertyFontItem) view).getValue();
+                    }
             } else if (view instanceof PropertyAttributesItem item) {
                 if (item.getKey().equals("property_parent_attr")) {
                     bean.parentAttributes = item.getValue();
@@ -993,6 +998,22 @@ public class ViewPropertyItems extends LinearLayout implements Kw, View.OnClickL
 
     public void setProjectFileBean(ProjectFileBean fileBean) {
         e = fileBean;
+    }
+
+    private void j(String key, String value) {
+        PropertyFontItem fontItem = (PropertyFontItem) f.get(key);
+        if (fontItem == null) {
+            fontItem = new PropertyFontItem(getContext());
+            fontItem.setKey(key);
+            fontItem.setValue(value);
+            fontItem.setTag(key);
+            fontItem.setOnPropertyValueChangeListener(this);
+            f.put(key, fontItem);
+        } else {
+            fontItem.setValue(value);
+        }
+        fontItem.a(sc_id);
+        addView(fontItem);
     }
 
     @Override
